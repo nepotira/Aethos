@@ -34,14 +34,15 @@ if (!function_exists('password_verify')) {
 }
 
 // Configurações do Banco de Dados
-$host = 'localhost';
+$host = '127.0.0.1';
+$port = '3307';
 $dbname = 'aethos_db';
-$user = 'root'; // Ajuste conforme seu usuário do MySQL, ex: root
-$password = ''; // Ajuste conforme sua senha do MySQL
+$user = 'root'; 
+$password = 'usbw'; 
 
 try {
     // Definindo a conexão usando PDO
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $password);
+    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $user, $password);
     
     // Mostrando os erros caso haja problema (Útil no ambiente de desenvolvimento)
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
