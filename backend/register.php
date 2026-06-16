@@ -76,10 +76,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['email']) && isset($data
 
     // --- Gera hash da senha ---
     $senha = password_hash($senhaBruta, PASSWORD_DEFAULT);
+    
+    // --- Gera código de verificação de e-mail (Simulação) ---
+    $codigo_verificacao = sprintf("%06d", mt_rand(1, 999999));
 
     try {
-        $sql = "INSERT INTO usuarios (tipo_usuario, nome, apelido, email, senha, ddd, telefone, cpf, endereco_fixo)
-                VALUES (:tipo, :nome, :apelido, :email, :senha, :ddd, :tel, :cpf, :endereco)";
+        $sql = "INSERT INTO usuarios (tipo_usuario, nome, apelido, email, senha, ddd, telefone, cpf, endereco_fixo, codigo_verificacao, email_verificado)
+                VALUES (:tipo, :nome, :apelido, :email, :senha, :ddd, :tel, :cpf, :endereco, :codigo, 0)";
 
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':tipo',     $tipoUsuario);
@@ -91,16 +94,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['email']) && isset($data
         $stmt->bindParam(':tel',      $telefone);
         $stmt->bindParam(':cpf',      $cpf);
         $stmt->bindParam(':endereco', $endereco_fixo);
+        $stmt->bindParam(':codigo',   $codigo_verificacao);
 
         if ($stmt->execute()) {
             $novo_id = $pdo->lastInsertId();
-            registrar_log($pdo, 'INFO', 'auth', 'novo_cadastro',
-                'Novo cadastro: ' . $nome . ' (' . $tipoUsuario . ') — ' . $email,
+            registrar_log($pdo, 'INFO', 'auth', 'novo_cadastro_pendente',
+                'Novo cadastro pendente de verificação: ' . $nome . ' (' . $tipoUsuario . ') — ' . $email,
                 $novo_id);
 
             echo json_encode(array(
                 'sucesso'  => true,
-                'mensagem' => 'Cadastro realizado com sucesso! Você já pode fazer login.'
+                'mensagem' => 'Cadastro pré-aprovado! Verifique seu e-mail.',
+                'email'    => $email,
+                'codigo_simulado' => $codigo_verificacao // Apenas para facilitar testes locais!
             ));
         } else {
             echo json_encode(array('sucesso' => false, 'mensagem' => 'Falha ao salvar no banco.'));

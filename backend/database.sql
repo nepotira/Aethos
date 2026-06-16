@@ -28,6 +28,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     aprovado_admin  BOOLEAN      DEFAULT FALSE,
     primeiro_acesso BOOLEAN      DEFAULT TRUE,
     ativo           BOOLEAN      DEFAULT TRUE,
+    email_verificado BOOLEAN     DEFAULT FALSE,
+    codigo_verificacao VARCHAR(6) DEFAULT NULL,
     criado_em       TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_tipo  (tipo_usuario),
     INDEX idx_email (email)
@@ -120,13 +122,13 @@ CREATE TABLE IF NOT EXISTS tokens_redefinicao (
 -- SEED: Desenvolvedores (senha padrão: 'senha123' em BCRYPT)
 -- Hash: $2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG
 -- ============================================================
-INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo) VALUES
-('desenvolvedor', 'Lorrany', 'lorrany@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1),
-('desenvolvedor', 'Arthur',  'arthur@aethos.dev',  '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1),
-('desenvolvedor', 'Nepo',    'nepo@aethos.dev',    '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1),
-('desenvolvedor', 'Leo',     'leo@aethos.dev',     '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1),
-('desenvolvedor', 'Joaquim', 'joaquim@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1);
+INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo, email_verificado) VALUES
+('desenvolvedor', 'Lorrany', 'lorrany@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1, 1),
+('desenvolvedor', 'Arthur',  'arthur@aethos.dev',  '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1, 1),
+('desenvolvedor', 'Nepo',    'nepo@aethos.dev',    '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1, 1),
+('desenvolvedor', 'Leo',     'leo@aethos.dev',     '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1, 1),
+('desenvolvedor', 'Joaquim', 'joaquim@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1, 1);
 
 -- SEED: Administrador Master
-INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo) VALUES
-('admin', 'Admin Geral', 'admin@aethos.com', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1);
+INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo, email_verificado) VALUES
+('admin', 'Admin Geral', 'admin@aethos.com', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1, 1);

@@ -154,7 +154,13 @@ $(document).ready(function() {
                 if(res.sucesso) {
                     showFeedbackMessage(res.mensagem, true);
                     // Opcional: redicionar pro login depois ou acessar
-                   setTimeout(() => { window.switchMainTab('login'); }, 2000);
+                   setTimeout(() => { 
+                       if (res.email) {
+                           window.location.href = 'verificar-email.html?email=' + encodeURIComponent(res.email);
+                       } else {
+                           window.switchMainTab('login'); 
+                       }
+                   }, 2000);
                 } else {
                     showFeedbackMessage(res.mensagem, false);
                 }

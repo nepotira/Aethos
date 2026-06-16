@@ -33,7 +33,25 @@ function erro(err){
     alert("Não foi possível obter sua localização");
 }
 
-obterLocal();
+// LÓGICA DO MODAL DE PERMISSÃO (UX)
+const modalGeo = document.getElementById('modal-geo');
+const btnGeoPermitir = document.getElementById('btn-geo-permitir');
+const btnGeoNegar = document.getElementById('btn-geo-negar');
+
+if (modalGeo && btnGeoPermitir && btnGeoNegar) {
+    btnGeoPermitir.addEventListener('click', () => {
+        modalGeo.style.display = 'none';
+        obterLocal();
+    });
+
+    btnGeoNegar.addEventListener('click', () => {
+        modalGeo.style.display = 'none';
+        // Fica na visão padrão (Brasília)
+    });
+} else {
+    // Fallback caso o modal não exista no DOM
+    obterLocal();
+}
 
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'

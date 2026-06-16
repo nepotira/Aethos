@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aethos — Verificação de E-mail</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D0F32;
+            color: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .glass-box {
+            background: rgba(13, 15, 50, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(165, 180, 252, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            padding: 3rem 2rem;
+            width: 100%;
+            max-width: 440px;
+        }
+        
+        .input-glass {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(165,180,252,0.2);
+            color: #fff;
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+            transition: 0.2s;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .input-glass:focus {
+            outline: none;
+            border-color: rgba(165,180,252,0.6);
+            box-shadow: 0 0 0 3px rgba(165,180,252,0.15);
+        }
+        
+        .btn-glass {
+            background: linear-gradient(135deg, #A5B4FC 0%, #818CF8 100%);
+            color: #0D0F32;
+            font-weight: 700;
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+            border: none;
+            transition: 0.3s;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .btn-glass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(165,180,252,0.4);
+        }
+        .btn-glass:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+    <div class="glass-box text-center">
+        <h2 class="text-3xl font-extrabold text-[#A5B4FC] mb-2"><i class="fa fa-envelope-open-text"></i> Verifique seu E-mail</h2>
+        <p class="text-sm text-gray-400 mb-6" id="desc-email">
+            Enviamos um código de 6 dígitos para o seu e-mail.<br>Por favor, insira-o abaixo para ativar sua conta.
+        </p>
+
+        <!-- Feedback Messages -->
+        <div id="mensagem-alerta" class="hidden mb-4 p-3 rounded-lg text-sm font-semibold border" role="alert"></div>
+
+        <form id="form-verificar">
+            <input type="hidden" id="user-email" value="">
+            <div class="mb-4">
+                <input type="text" id="codigo-input" class="input-glass" placeholder="000000" maxlength="6" autocomplete="off" required>
+            </div>
+            
+            <button type="submit" id="btn-submit" class="btn-glass">Verificar Código</button>
+        </form>
+        
+        <div class="mt-6 text-sm text-gray-400">
+            Não recebeu? <button id="btn-reenviar" class="text-[#A5B4FC] font-semibold hover:underline bg-transparent border-none cursor-pointer">Reenviar código</button>
+        </div>
+        <div class="mt-2 text-sm">
+            <a href="login.html" class="text-gray-500 hover:text-white transition">Voltar para o Login</a>
+        </div>
+    </div>
+
+    <!-- jQuery local para não ser bloqueado! -->
+    <script src="js/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Puxa o e-mail da URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const email = urlParams.get('email');
+            
+            if(email) {
+                $('#user-email').val(email);
+                $('#desc-email').html(`Enviamos um código de 6 dígitos para <strong>${email}</strong>.<br>Insira-o abaixo para ativar sua conta.`);
+            } else {
+                showFeedback('Nenhum e-mail especificado na URL.', false);
+            }
+
+            function showFeedback(msg, success) {
+                const alertBox = $('#mensagem-alerta');
+                alertBox.removeClass('hidden bg-red-100 text-red-700 border-red-300 bg-green-100 text-green-700 border-green-300');
+                if(success) {
+                    alertBox.addClass('bg-green-100 text-green-700 border-green-300').text(msg).fadeIn();
+                } else {
+                    alertBox.addClass('bg-red-100 text-red-700 border-red-300').text(msg).fadeIn();
+                }
+            }
+
+            $('#form-verificar').on('submit', function(e) {
+                e.preventDefault();
+                
+                const code = $('#codigo-input').val().trim();
+                const userEmail = $('#user-email').val();
+
+                if(!userEmail) {
+                    showFeedback('E-mail não identificado. Volte ao login.', false);
+                    return;
+                }
+
+                if(code.length !== 6) {
+                    showFeedback('O código deve conter exatos 6 dígitos.', false);
+                    return;
+                }
+
+                const btn = $('#btn-submit');
+                const oldText = btn.text();
+                btn.text('Verificando...').prop('disabled', true);
+
+                $.ajax({
+                    url: 'backend/verificar_email.php',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ email: userEmail, codigo: code }),
+                    success: function(res) {
+                        if(res.sucesso) {
+                            showFeedback(res.mensagem, true);
+                            setTimeout(() => {
+                                window.location.href = res.url_redirecionamento || 'index.html';
+                            }, 1500);
+                        } else {
+                            showFeedback(res.mensagem, false);
+                            btn.text(oldText).prop('disabled', false);
+                        }
+                    },
+                    error: function() {
+                        showFeedback('Erro ao comunicar com o servidor.', false);
+                        btn.text(oldText).prop('disabled', false);
+                    }
+                });
+            });
+
+            $('#btn-reenviar').on('click', function() {
+                // Aqui entraria a lógica de reenviar o código, que faria um POST no backend.
+                // Como não implementamos o PHP de reenvio ainda, daremos um aviso:
+                alert('Função de reenvio será implementada em breve! Cheque seu console no cadastro simulado.');
+            });
+        });
+    </script>
+</body>
+</html>
