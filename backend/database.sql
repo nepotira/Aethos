@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS tokens_redefinicao (
 -- SEED: Desenvolvedores (senha padrão: 'senha123' em BCRYPT)
 -- Hash: $2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG
 -- ============================================================
-INSERT INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo) VALUES
+INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo) VALUES
 ('desenvolvedor', 'Lorrany', 'lorrany@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1),
 ('desenvolvedor', 'Arthur',  'arthur@aethos.dev',  '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1),
 ('desenvolvedor', 'Nepo',    'nepo@aethos.dev',    '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1),
@@ -128,5 +128,5 @@ INSERT INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo) 
 ('desenvolvedor', 'Joaquim', 'joaquim@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1);
 
 -- SEED: Administrador Master
-INSERT INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo) VALUES
+INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo) VALUES
 ('admin', 'Admin Geral', 'admin@aethos.com', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1);

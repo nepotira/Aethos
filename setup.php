@@ -82,37 +82,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_setup'])) {
         goto render;
     }
 
-    // ── PASSO 3: Verificar se tabela já existe ────────────────
-    $tabelas = $pdo->query("SHOW TABLES LIKE 'usuarios'")->fetchAll();
-    if (!empty($tabelas)) {
-        $steps[]  = ['warn', 'Tabela <strong>usuarios</strong> já existe — pulando criação de schema e seed. Nada foi alterado.'];
-        $already  = true;
-        goto render;
-    }
+    // ── PASSO 3 removido: O database.sql já usa IF NOT EXISTS, o que torna seguro re-executar sem pular as outras tabelas.
 
-    // ── PASSO 4: Criar tabela usuarios ───────────────────────
+    // ── PASSO 4: Criar Todas as Tabelas (via database.sql) ────────
     try {
-        $pdo->exec("
-            CREATE TABLE IF NOT EXISTS usuarios (
-                id             INT AUTO_INCREMENT PRIMARY KEY,
-                tipo_usuario   ENUM('comum','professor','admin','desenvolvedor') NOT NULL DEFAULT 'comum',
-                nome           VARCHAR(255) NOT NULL,
-                apelido        VARCHAR(100),
-                email          VARCHAR(191) UNIQUE NOT NULL,
-                senha          VARCHAR(255) NOT NULL,
-                ddd            VARCHAR(3),
-                telefone       VARCHAR(20),
-                foto_perfil    VARCHAR(255),
-                cpf            VARCHAR(14) UNIQUE,
-                endereco_fixo  TEXT,
-                aprovado_admin BOOLEAN DEFAULT FALSE,
-                primeiro_acesso BOOLEAN DEFAULT TRUE,
-                criado_em      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-        ");
-        $steps[] = ['ok', 'Tabela <strong>usuarios</strong> criada com sucesso.'];
+        $sql = file_get_contents(__DIR__ . '/backend/database.sql');
+        // Remover comandos de CREATE DATABASE e USE, pois já os fizemos no Passo 2
+        $sql = preg_replace('/CREATE DATABASE[^;]+;/i', '', $sql);
+        $sql = preg_replace('/USE [^;]+;/i', '', $sql);
+        
+        $pdo->exec($sql);
+        $steps[] = ['ok', 'Todas as 5 tabelas (usuarios, locais_esportivos, avaliacoes, logs_sistema, tokens) criadas com sucesso a partir de database.sql!'];
     } catch (PDOException $e) {
-        $steps[]  = ['err', 'Falha ao criar tabela: ' . $e->getMessage()];
+        $steps[]  = ['err', 'Falha ao criar as tabelas: ' . $e->getMessage()];
         $success  = false;
         goto render;
     }
