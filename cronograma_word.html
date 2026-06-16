@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aethos - Cronograma (Documento Word)</title>
+    <!-- Tailwind CSS (Apenas para o Frame/Contêiner do Visualizador, não para as páginas impressas) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Inter para a Interface do Visualizador -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mermaid.js para Renderização do Gantt -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.4/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            htmlLabels: false,
+            gantt: {
+                titleTopMargin: 25,
+                barHeight: 20,
+                barGap: 4,
+                topPadding: 50,
+                leftPadding: 75,
+                gridLineStartPadding: 35,
+                fontSize: 11,
+                numberSectionStyles: 4,
+                axisFormat: '%m/%Y'
+            }
+        });
+    </script>
+    <style>
+        /* Estilos da Interface do Visualizador */
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #ffffff; margin: 0; padding: 0; }
+        .glass-header { background: rgba(13, 15, 50, 0.85); backdrop-filter: blur(12px) saturate(180%); border-bottom: 1px solid rgba(165, 180, 252, 0.15); }
+        .document-container { padding: 20px 0; display: flex; flex-direction: column; align-items: center; }
+        .page { background: #ffffff; color: #000000; width: 21cm; height: 29.7cm; padding: 3cm 2cm 3cm 3cm; margin: 20px auto; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); box-sizing: border-box; position: relative; font-family: 'Times New Roman', 'Calibri', 'Arial', sans-serif; font-size: 12pt; line-height: 1.5; overflow: hidden; }
+        .page-header { position: absolute; top: 1.5cm; left: 3cm; right: 2cm; font-size: 8.5pt; color: #7f7f7f; border-bottom: 0.5px solid #d3d3d3; padding-bottom: 4px; display: flex; justify-content: space-between; font-family: 'Calibri', 'Arial', sans-serif; }
+        .page-footer { position: absolute; bottom: 1.2cm; left: 3cm; right: 2cm; font-size: 8.5pt; color: #7f7f7f; border-top: 0.5px solid #d3d3d3; padding-top: 4px; display: flex; justify-content: space-between; font-family: 'Calibri', 'Arial', sans-serif; }
+        h2.doc-subtitle { font-size: 12pt; font-weight: bold; color: #000000; margin-top: 14pt; margin-bottom: 12pt; }
+        h3.doc-section { font-size: 12pt; font-weight: bold; color: #000000; margin-top: 18pt; margin-bottom: 12pt; }
+        p.doc-text { margin-bottom: 8pt; text-align: justify; text-indent: 1.25cm; }
+        .doc-caption { font-size: 11pt; font-family: 'Times New Roman', serif; text-align: left; margin-top: 4pt; margin-bottom: 8pt; color: #000000; }
+        @media print { body { background: #ffffff; color: #000000; } .no-print { display: none !important; } .document-container { padding: 0; } .page { margin: 0; box-shadow: none; page-break-after: always; width: 21cm; height: 29.7cm; box-sizing: border-box; } }
+    </style>
+</head>
+<body class="selection:bg-indigo-500 selection:text-white pb-10">
+
+    <!-- CONTROLES DO VISUALIZADOR -->
+    <header class="no-print sticky top-0 z-50 w-full glass-header px-6 py-4 flex items-center justify-between shadow-xl">
+        <div class="flex items-center gap-3">
+            <img src="https://lh3.googleusercontent.com/aida/ADBb0uhW5Fb7G6giNXJsOSFdrzHnfu2aU0eIEVwMr47yfP8SMzrZW4MJJjHVNUAznhlwYghaRa1ZijFAJq9K5j0py2Mt_MDZJd6jWft7qy8Du7JOGpr0-Xl5a0aro_ZmsjO8Yt72Cud5j-PsVN6W1qieNltViUYHwpGDgKfvvG3hfbIZ_LpgCoOK7ASAm3WuzZfePstgkjmGP8tZEqcu0zPg-rVUddNxO89djCYKBIuFlitvwtd502BGVATXubuNr2MoGoojfiJGo65b3z8" alt="Aethos Logo" class="h-9 w-9 rounded-xl object-contain shadow-lg shadow-indigo-500/20">
+            <div>
+                <span class="text-md font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">
+                    Aethos Lab Document Viewer
+                </span>
+                <p class="text-[10px] text-slate-400">Modo de Visualização para Impressão & Exportação</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <button id="btnExport" onclick="exportToWord()" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow transition">
+                <i class="fa-solid fa-file-word"></i> Salvar como Word
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTAINER DAS PÁGINAS A4 -->
+    <div class="document-container" id="word-content">
+
+        <!-- ================= PÁGINA 1: CRONOGRAMA ================= -->
+        <div class="page" id="page-1">
+            <div class="page-header">
+                <span>Aethos Lab — Projeto de Software</span>
+                <span>Seção 6</span>
+            </div>
+
+            <div class="page-content">
+                <h2 class="doc-subtitle mt-6">6.6 Cronograma de Atividades</h2>
+                
+                <p class="doc-text">
+                    O cronograma organiza no tempo todas as atividades do projeto de desenvolvimento, do início ao fim. Utilize obrigatoriamente um Gráfico de Gantt — uma tabela onde as linhas são as atividades e as colunas são as semanas ou meses do projeto, com barras horizontais indicando o período de execução de cada tarefa. Ferramentas como Excel, Google Sheets ou o site Canva permitem criar um Gantt de forma simples e visual.
+                </p>
+
+                <div class="doc-caption font-bold mt-8">Figura 3 – Gráfico de Gantt do cronograma de desenvolvimento</div>
+                
+                <div class="mermaid flex justify-center mt-4">
+gantt
+    title Cronograma de Desenvolvimento - Aethos (2026)
+    dateFormat  YYYY-MM-DD
+    axisFormat  %m/%y
+    
+    section Planejamento
+    Requisitos & Doc.         :active, a1, 2026-01-10, 30d
+    
+    section Design
+    Prototipagem (Figma)      :a2, after a1, 30d
+    
+    section Desenvolvimento
+    Frontend (Web App)        :a3, 2026-03-12, 45d
+    Backend & MySQL           :a4, 2026-04-01, 45d
+    
+    section Testes
+    Testes de Integração      :a5, 2026-05-16, 20d
+    
+    section Entrega
+    Implantação Final         :a6, 2026-06-05, 15d
+                </div>
+                
+                <div class="doc-caption mt-4"><strong>Fonte:</strong> Dos próprios autores, 2026.</div>
+            </div>
+
+            <div class="page-footer">
+                <span>Aethos - Conexão Esportiva</span>
+                <span>Página 1</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT DE EXPORTAÇÃO PARA WORD -->
+    <script>
+        function convertSvgToPng(svgElement) {
+            return new Promise((resolve) => {
+                try {
+                    const svgClone = svgElement.cloneNode(true);
+                    
+                    const styles = svgClone.querySelectorAll('style');
+                    styles.forEach(style => {
+                        let cssText = style.textContent;
+                        cssText = cssText.replace(/@import\s+url\([^)]+\);?/gi, '');
+                        cssText = cssText.replace(/@font-face\s*\{[\s\S]*?\}/gi, '');
+                        style.textContent = cssText;
+                    });
+
+                    const svgString = new XMLSerializer().serializeToString(svgClone);
+                    const bounds = svgElement.getBoundingClientRect();
+                    const width = bounds.width || 800;
+                    const height = bounds.height || 400;
+                    
+                    const base64Svg = btoa(unescape(encodeURIComponent(svgString)));
+                    const dataURL = 'data:image/svg+xml;base64,' + base64Svg;
+                    
+                    const image = new Image();
+                    image.onload = () => {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = width * 2;
+                            canvas.height = height * 2;
+                            const context = canvas.getContext('2d');
+                            context.scale(2, 2);
+                            context.fillStyle = '#ffffff';
+                            context.fillRect(0, 0, width, height);
+                            context.drawImage(image, 0, 0, width, height);
+                            resolve(canvas.toDataURL('image/png', 1.0));
+                        } catch (e) {
+                            console.error("Erro no drawImage/canvas:", e);
+                            resolve(null);
+                        }
+                    };
+                    image.onerror = () => resolve(null);
+                    image.src = dataURL;
+                } catch(e) {
+                    console.error("Erro ao converter SVG:", e);
+                    resolve(null);
+                }
+            });
+        }
+
+        async function exportToWord() {
+            const btn = document.getElementById('btnExport');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gerando arquivo...';
+            btn.disabled = true;
+
+            const contentClone = document.getElementById("word-content").cloneNode(true);
+
+            const removeEls = contentClone.querySelectorAll('.no-print, .no-export, header, button');
+            removeEls.forEach(el => el.parentNode.removeChild(el));
+
+            const originalMermaidSvgs = document.querySelectorAll('.mermaid svg');
+            const clonedMermaidDivs = contentClone.querySelectorAll('.mermaid');
+
+            for (let i = 0; i < originalMermaidSvgs.length; i++) {
+                const svg = originalMermaidSvgs[i];
+                const targetDiv = clonedMermaidDivs[i];
+                if (svg && targetDiv) {
+                    const bounds = svg.getBoundingClientRect();
+                    const width = bounds.width || 800;
+                    const height = bounds.height || 400;
+                    const aspect = height / width;
+                    const targetWidthCm = 15;
+                    const targetHeightCm = targetWidthCm * aspect;
+                    const pixelWidth = 600;
+                    const pixelHeight = Math.round(600 * aspect);
+
+                    const svgClone = svg.cloneNode(true);
+                    svgClone.setAttribute('width', pixelWidth.toString());
+                    svgClone.setAttribute('height', pixelHeight.toString());
+                    svgClone.style.cssText = "width: " + targetWidthCm + "cm; height: " + targetHeightCm + "cm; display: block; margin: 10px auto;";
+
+                    const pngBase64 = await convertSvgToPng(svg);
+                    if (pngBase64) {
+                        const img = document.createElement('img');
+                        img.src = pngBase64;
+                        img.style.cssText = "width: " + targetWidthCm + "cm; height: " + targetHeightCm + "cm; display: block; margin: 10px auto;";
+                        img.setAttribute('width', pixelWidth.toString());
+                        img.setAttribute('height', pixelHeight.toString());
+                        targetDiv.innerHTML = '';
+                        targetDiv.appendChild(img);
+                    } else {
+                        targetDiv.innerHTML = '';
+                        targetDiv.appendChild(svgClone);
+                    }
+                }
+            }
+
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                           "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+                           "xmlns='http://www.w3.org/TR/REC-html40'>" +
+                           "<head><title>Aethos - Cronograma</title>" +
+                           "<style>" +
+                           "body { font-family: 'Times New Roman', serif; font-size: 12pt; color: #000000; line-height: 1.5; background-color: #ffffff; }" +
+                           "h2.doc-subtitle { font-size: 12pt; font-weight: bold; color: #000000; margin-top: 14pt; margin-bottom: 12pt; }" +
+                           "h3.doc-section { font-size: 12pt; font-weight: bold; color: #000000; margin-top: 18pt; margin-bottom: 12pt; }" +
+                           "p.doc-text { margin-bottom: 8pt; text-align: justify; text-indent: 1.25cm; }" +
+                           ".page { background: #ffffff; padding: 0; margin: 0; }" +
+                           ".page-header, .page-footer { display: none; }" + 
+                           ".doc-caption { font-size: 11pt; font-weight: bold; text-align: left; margin-top: 4pt; margin-bottom: 8pt; color: #000000; }" +
+                           "</style>" +
+                           "</head><body>";
+            const footer = "</body></html>";
+
+            const htmlContent = header + contentClone.innerHTML + footer;
+
+            const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "cronograma_aethos.doc";
+            document.body.appendChild(a);
+            a.click();
+            
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>

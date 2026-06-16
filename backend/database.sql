@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     -- Campos em comum
     nome VARCHAR(255) NOT NULL,
     apelido VARCHAR(100),
-    email VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(191) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL,
     ddd VARCHAR(3),
     telefone VARCHAR(20),
@@ -29,12 +29,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
 -- Inserindo os Desenvolvedores iniciais. 
 -- A senha 'senha123' está criptografada em BCRYPT, que é o padrão seguro do PHP.
 INSERT INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso) VALUES
-('desenvolvedor', 'Lorrany', 'lorrany@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xLquWzH7b.2rQ6t6Q7J9K1xLquWzH7b.2rQ', 1),
-('desenvolvedor', 'Arthur',  'arthur@aethos.dev',  '$2y$10$06S4p.2rQ6t6Q7J9K1xLquWzH7b.2rQ6t6Q7J9K1xLquWzH7b.2rQ', 1),
-('desenvolvedor', 'Nepo',    'nepo@aethos.dev',    '$2y$10$06S4p.2rQ6t6Q7J9K1xLquWzH7b.2rQ6t6Q7J9K1xLquWzH7b.2rQ', 1),
-('desenvolvedor', 'Leo',     'leo@aethos.dev',     '$2y$10$06S4p.2rQ6t6Q7J9K1xLquWzH7b.2rQ6t6Q7J9K1xLquWzH7b.2rQ', 1),
-('desenvolvedor', 'Joaquim', 'joaquim@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xLquWzH7b.2rQ6t6Q7J9K1xLquWzH7b.2rQ', 1);
+('desenvolvedor', 'Lorrany', 'lorrany@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1),
+('desenvolvedor', 'Arthur',  'arthur@aethos.dev',  '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1),
+('desenvolvedor', 'Nepo',    'nepo@aethos.dev',    '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1),
+('desenvolvedor', 'Leo',     'leo@aethos.dev',     '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1),
+('desenvolvedor', 'Joaquim', 'joaquim@aethos.dev', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1);
 
 -- Inserindo 1 Administrador Master genérico
 INSERT INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso) VALUES
-('admin', 'Admin Geral', 'admin@aethos.com', '$2y$10$06S4p.2rQ6t6Q7J9K1xLquWzH7b.2rQ6t6Q7J9K1xLquWzH7b.2rQ', 1);
+('admin', 'Admin Geral', 'admin@aethos.com', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1);

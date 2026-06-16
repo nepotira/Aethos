@@ -78,9 +78,15 @@
                         <div class="border-t border-gray-300 w-full"></div>
                         <span class="bg-white px-3 text-xs text-gray-500 absolute">OU</span>
                     </div>
-                    <button type="button" class="w-full border text-gray-700 font-medium py-2 rounded-lg hover:bg-gray-50 transition flex justify-center items-center gap-2">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" class="w-4 h-4">
-                        Entrar com Google
+                    <!-- PATCH BUG-04: Botão Google desabilitado até implementação de OAuth (RF15) -->
+                    <button
+                        type="button"
+                        disabled
+                        title="Login com Google — Em breve!"
+                        class="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-lg py-2 px-4 text-gray-400 bg-gray-50 cursor-not-allowed opacity-60 select-none"
+                    >
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 opacity-50" alt="Google">
+                        Entrar com Google <span class="text-xs">(em breve)</span>
                     </button>
                 </div>
             </form>
@@ -92,7 +98,8 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                    <input type="text" name="nome" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                    <!-- PATCH BUG-17: placeholder adicionado -->
+                    <input type="text" name="nome" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Seu nome completo" required>
                 </div>
 
                 <div>
@@ -136,6 +143,22 @@
                     <div class="relative">
                         <input type="password" id="reg-senha" name="senha" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
                         <i class="fa fa-eye-slash absolute right-3 top-3 text-gray-400 cursor-pointer toggle-password" data-target="reg-senha"></i>
+                    </div>
+                </div>
+
+                <!-- PATCH BUG-06: Campo de confirmação de senha -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha</label>
+                    <div class="relative">
+                        <input
+                            type="password"
+                            id="reg-senha-confirm"
+                            class="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
+                            placeholder="Repita sua senha"
+                            required
+                        >
+                        <i class="fa fa-eye-slash absolute right-3 top-3 text-gray-400 cursor-pointer toggle-password"
+                           data-target="reg-senha-confirm"></i>
                     </div>
                 </div>
 

@@ -17,10 +17,16 @@ function sucesso(position){
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
 
-    map.setView([latitude, longitude]).addTo(map)
-    .bindPopup("Você está aqui")
-    .openPopup();
+    // Centraliza o mapa na posição do usuário
+    map.setView([latitude, longitude], 15);
+
+    // Cria o marcador separadamente — CORRETO (anteriormente vinculava popup ao mapa, não ao marcador)
+    L.marker([latitude, longitude])
+        .addTo(map)
+        .bindPopup("📍 Você está aqui")
+        .openPopup();
 };
+
 
 function erro(err){
     console.warn(`Erro(${err.code}): ${err.message}`);
@@ -72,7 +78,14 @@ searchBtn.addEventListener('click', async () => {
     };
 });
 
-// Autocompletar ao digitar
+// BUG-03 FIX: Aciona busca ao pressionar Enter no campo de texto
+searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        searchBtn.click();
+    }
+});
+
 searchInput.addEventListener('input', (evento)=>{
     const textoDigitado = evento.target.value.trim();
 
@@ -85,7 +98,7 @@ searchInput.addEventListener('input', (evento)=>{
 
     tempoEspera = setTimeout(() => {
         buscarSugestoesAPI(textoDigitado);
-    }, 0);
+    }, 350); // 350ms de debounce — evita flood de requisições ao Nominatim (exigência dos ToS da API)
 });
 
 async function buscarSugestoesAPI(query){

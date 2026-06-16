@@ -126,6 +126,14 @@ $(document).ready(function() {
     $('#form-register').on('submit', function(e) {
         e.preventDefault();
         
+        // PATCH BUG-06: Validação de confirmação de senha
+        const s1 = $('#reg-senha').val();
+        const s2 = $('#reg-senha-confirm').val();
+        if (s1 !== s2) {
+            showFeedbackMessage('As senhas não coincidem!', false);
+            return;
+        }
+
         // Aqui enviamos via POST/Ajax para o PHP
         const rawArray = $(this).serializeArray();
         const dataJson = {};
@@ -135,6 +143,7 @@ $(document).ready(function() {
         const btn = $(this).find('button[type="submit"]');
         const oldText = btn.text();
         btn.text('Cadastrando...').prop('disabled', true);
+
 
         $.ajax({
             url: 'backend/register.php',
@@ -187,13 +196,8 @@ $(document).ready(function() {
                     showFeedbackMessage(res.mensagem, true);
                     
                     setTimeout(() => { 
-                        // Regra pedida: Se primário admin/dev, vai trocar senha
-                        if(res.primeiro_acesso === 1) {
-                            alert("Atenção Dev/Admin: É seu primeiro acesso. Você será forçado a trocar a senha (redirecionamento fictício)!");
-                        } else {
-                            // Sucesso real usuário comum
-                            window.location.href = 'index.html'; 
-                        }
+                        // Realiza redirecionamento dinâmico (Para index ou para trocar_senha.php)
+                        window.location.href = res.url_redirecionamento; 
                     }, 1500);
 
                 } else {

@@ -1,4 +1,5 @@
 <?php
+session_start(); // Inicia o gerenciador de sessões do PHP (obrigatório para manter usuários logados)
 header('Content-Type: application/json');
 require_once 'conexao.php';
 
@@ -14,10 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($data['email']) && isset($data
     
     $email = $data['email'];
     $senha = $data['senha'];
-    $tipoLogin = $data['tipo_login'] ?? 'comum'; // Pode ser 'comum', 'professor', 'admin', 'desenvolvedor'
+    $tipoLogin = isset($data['tipo_login']) ? $data['tipo_login'] : 'comum'; 
     
-    // Busca o usuário baseado no e-mail (usamos email genérico para desenv, ou nomes... Aqui usando email/nome)
-    // Para Desenvolvedor, eles logam usando NOME em vez de EMAIL na plataforma como descrito (Lorrany, Arthur, etc)
     if ($tipoLogin == 'desenvolvedor') {
         $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE nome = :email AND tipo_usuario = 'desenvolvedor'");
     } else {
@@ -32,16 +31,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($data['email']) && isset($data
     
     if ($user) {
         // Verifica a senha 
-        // Em um sistema real, a senha é verificada por password_verify($senha, $user['senha']). 
-        // Aqui estamos aceitando login fictício p/ fins de protótipo de telas ou verify se houver hash
-        if (password_verify($senha, $user['senha']) || $senha == 'senha123') { 
+        if (password_verify($senha, $user['senha'])) {
             
-            // Retorna sucessos e regras extras - ex: redirecionar admin pra trocar a senha
+            // ============================================
+            // Início Seguro de Sessão! Guarda "quem" logou
+            // ============================================
+            // Regenera o ID de sessão para prevenir Session Fixation Attack
+            session_regenerate_id(true);
+
+            $_SESSION['usuario_id'] = $user['id'];
+            $_SESSION['nome'] = $user['nome'];
+            $_SESSION['tipo_usuario'] = $user['tipo_usuario'];
+
+            // Correção do Bug do Atleta (Módulo 2 da solicitação):
+            // Só forçaremos 'primeiro_acesso = 1' se ele REALMENTE FOR admin ou desenvolvedor.
+            $forcaReset = false;
+            if (($user['tipo_usuario'] === 'admin' || $user['tipo_usuario'] === 'desenvolvedor') && $user['primeiro_acesso'] == 1) {
+                $forcaReset = true;
+            }
+
+            // Retorna sucesso
             echo json_encode([
                 'sucesso' => true,
                 'mensagem' => 'Login aprovado!',
-                'primeiro_acesso' => $user['primeiro_acesso'],
-                'url_redirecionamento' => ($user['primeiro_acesso'] == 1) ? 'nova_senha.html' : 'mapa.html'
+                'primeiro_acesso' => $forcaReset,
+                'url_redirecionamento' => ($forcaReset) ? 'nova_senha.html' : 'index.html'
             ]);
             exit;
 
@@ -50,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($data['email']) && isset($data
             exit;
         }
     } else {
-        echo json_encode(['sucesso' => false, 'mensagem' => 'Usuário não encontrado com este e-mail ou nome para este tipo.']);
+        echo json_encode(['sucesso' => false, 'mensagem' => 'Usuário não encontrado.']);
         exit;
     }
 } else {

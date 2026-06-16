@@ -2,16 +2,24 @@
 header('Content-Type: application/json');
 require_once 'conexao.php';
 
-$data = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+$decoded = json_decode(file_get_contents('php://input'), true);
+$data = !empty($decoded) ? $decoded : $_POST;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($data['email']) && isset($data['senha'])) {
     
-    $tipoUsuario = $data['tipo_usuario'] ?? 'comum';
-    $nome = $data['nome'] ?? '';
-    $apelido = $data['apelido'] ?? null;
-    $email = $data['email'] ?? '';
-    $ddd = $data['ddd'] ?? '';
-    $telefone = $data['telefone'] ?? '';
+    $tipoUsuario = isset($data['tipo_usuario']) ? $data['tipo_usuario'] : 'comum';
+    $nome = isset($data['nome']) ? $data['nome'] : '';
+    $apelido = isset($data['apelido']) ? $data['apelido'] : null;
+    $email = isset($data['email']) ? $data['email'] : '';
+    $ddd = isset($data['ddd']) ? $data['ddd'] : '';
+    $telefone = isset($data['telefone']) ? $data['telefone'] : '';
+
+    // PATCH BUG-05: Validação de tamanho mínimo de senha (alinhado com trocar_senha.php)
+    if (strlen($data['senha']) < 5) {
+        echo json_encode(['sucesso' => false, 'mensagem' => 'A senha deve ter no mínimo 5 caracteres.']);
+        exit;
+    }
+
     $senha = password_hash($data['senha'], PASSWORD_DEFAULT); // Criptografia segura
     
     $cpf = null;
@@ -19,8 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($data['email']) && isset($data
     
     // Pegando só se for professor
     if ($tipoUsuario === 'professor') {
-        $cpf = $data['cpf'] ?? null;
-        $endereco_fixo = $data['endereco'] ?? null;
+        $cpf = isset($data['cpf']) ? $data['cpf'] : null;
+        $endereco_fixo = isset($data['endereco']) ? $data['endereco'] : null;
     }
 
     try {

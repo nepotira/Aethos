@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aethos - Projeto de Software (Documento Word)</title>
+    <!-- Tailwind CSS (Apenas para o Frame/Contêiner do Visualizador, não para as páginas impressas) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Inter para a Interface do Visualizador -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mermaid.js para Renderização de UML (Tema Claro padrão) -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.4/dist/mermaid.min.js"></script>
+    <script>
+        // Configurando o Mermaid para Tema Claro (Word) e desativando HTML labels para evitar foreignObject (que causa SecurityError no canvas)
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            htmlLabels: false,
+            themeVariables: {
+                background: '#ffffff',
+                primaryColor: '#f2f2f2',
+                primaryTextColor: '#000000',
+                lineColor: '#5b9bd5',
+                secondaryColor: '#f8f9fa',
+                tertiaryColor: '#ffffff'
+            }
+        });
+    </script>
+    <style>
+        /* Estilos da Interface do Visualizador */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Fundo escuro premium para o visualizador */
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilo Glassmorphism para os Controles do Visualizador */
+        .glass-header {
+            background: rgba(13, 15, 50, 0.85);
+            backdrop-filter: blur(12px) saturate(180%);
+            border-bottom: 1px solid rgba(165, 180, 252, 0.15);
+        }
+
+        /* ==========================================================================
+           ESTILOS DO DOCUMENTO WORD (A4 E IMPRESSÃO)
+           ========================================================================== */
+        
+        /* Contêiner que agrupa as folhas */
+        .document-container {
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Cada página A4 */
+        .page {
+            background: #ffffff;
+            color: #000000;
+            width: 21cm;
+            height: 29.7cm;
+            padding: 3cm 2cm 3cm 3cm; /* Margens padrão ABNT (Sup: 3, Inf: 2, Esq: 3, Dir: 2) */
+            margin: 20px auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+            position: relative;
+            font-family: 'Calibri', 'Arial', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            overflow: hidden; /* Impede transbordamento visual na folha */
+        }
+
+        /* Cabeçalho e Rodapé das Folhas (Estilo Word) */
+        .page-header {
+            position: absolute;
+            top: 1.5cm;
+            left: 3cm;
+            right: 2cm;
+            font-size: 8.5pt;
+            color: #7f7f7f;
+            border-bottom: 0.5px solid #d3d3d3;
+            padding-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+
+        .page-footer {
+            position: absolute;
+            bottom: 1.2cm;
+            left: 3cm;
+            right: 2cm;
+            font-size: 8.5pt;
+            color: #7f7f7f;
+            border-top: 0.5px solid #d3d3d3;
+            padding-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Calibri', 'Arial', sans-serif;
+        }
+
+        /* Conteúdo interno da página */
+        .page-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* Elementos Textuais */
+        h1.doc-title {
+            font-size: 16pt;
+            font-weight: bold;
+            color: #1f4e79; /* Azul clássico do Microsoft Word */
+            margin-bottom: 12pt;
+            text-transform: uppercase;
+            border-bottom: 1px solid #1f4e79;
+            padding-bottom: 3px;
+        }
+
+        h2.doc-subtitle {
+            font-size: 13pt;
+            font-weight: bold;
+            color: #2e75b6;
+            margin-top: 14pt;
+            margin-bottom: 6pt;
+        }
+
+        h3.doc-section {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #2e75b6;
+            margin-top: 10pt;
+            margin-bottom: 4pt;
+        }
+
+        p.doc-text {
+            margin-bottom: 8pt;
+            text-align: justify;
+            text-indent: 1.25cm; /* Parágrafo padrão */
+        }
+
+        p.doc-text-no-indent {
+            margin-bottom: 8pt;
+            text-align: justify;
+        }
+
+        /* Tabelas Formatadas como Word */
+        table.doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8pt 0;
+            font-size: 9.5pt;
+        }
+
+        table.doc-table th, table.doc-table td {
+            border: 1px solid #7f7f7f;
+            padding: 5px 8px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        table.doc-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #1f4e79;
+        }
+
+        /* Lista de Itens */
+        ul.doc-list {
+            margin-left: 1.5cm;
+            margin-bottom: 8pt;
+            list-style-type: square;
+        }
+
+        ul.doc-list li {
+            margin-bottom: 3pt;
+        }
+
+        /* Caixas de Destaque */
+        .doc-alert {
+            border-left: 3px solid #1f4e79;
+            background-color: #f8f9fa;
+            padding: 8px 12px;
+            margin: 8pt 0;
+            font-size: 10pt;
+        }
+
+        /* Estilos de Diagramas */
+        .mermaid {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .mermaid svg {
+            max-width: 100% !important;
+            max-height: 230px !important;
+            width: auto !important;
+            height: auto !important;
+        }
+
+        /* Estilo para Imagens Reais */
+        .doc-img {
+            max-height: 180px;
+            width: auto;
+            border: 1px solid #d3d3d3;
+            padding: 3px;
+            background: #ffffff;
+            display: block;
+            margin: 5px auto;
+        }
+
+        /* Legenda de Figuras/Tabelas */
+        .doc-caption {
+            font-size: 8.5pt;
+            font-style: italic;
+            text-align: center;
+            margin-top: 4pt;
+            margin-bottom: 8pt;
+            color: #4f4f4f;
+        }
+
+        /* ==========================================================================
+           CONFIGURAÇÕES DE IMPRESSÃO / PDF
+           ========================================================================== */
+        @media print {
+            body {
+                background: #ffffff;
+                color: #000000;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .document-container {
+                padding: 0;
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+                break-after: page;
+                /* Resetar margem do navegador e forçar o tamanho correto */
+                width: 21cm;
+                height: 29.7cm;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+<body class="selection:bg-indigo-500 selection:text-white pb-10">
+
+    <!-- CONTROLES DO VISUALIZADOR (Não aparecem na exportação nem na impressão) -->
+    <header class="no-print sticky top-0 z-50 w-full glass-header px-6 py-4 flex items-center justify-between shadow-xl">
+        <div class="flex items-center gap-3">
+            <img src="https://lh3.googleusercontent.com/aida/ADBb0uhW5Fb7G6giNXJsOSFdrzHnfu2aU0eIEVwMr47yfP8SMzrZW4MJJjHVNUAznhlwYghaRa1ZijFAJq9K5j0py2Mt_MDZJd6jWft7qy8Du7JOGpr0-Xl5a0aro_ZmsjO8Yt72Cud5j-PsVN6W1qieNltViUYHwpGDgKfvvG3hfbIZ_LpgCoOK7ASAm3WuzZfePstgkjmGP8tZEqcu0zPg-rVUddNxO89djCYKBIuFlitvwtd502BGVATXubuNr2MoGoojfiJGo65b3z8" alt="Aethos Logo" class="h-9 w-9 rounded-xl object-contain shadow-lg shadow-indigo-500/20">
+            <div>
+                <span class="text-md font-extrabold tracking-tight bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">
+                    Aethos Lab Document Viewer
+                </span>
+                <p class="text-[10px] text-slate-400">Modo de Visualização para Impressão & Exportação</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <!-- Botão de Voltar para a versão Dark -->
+            <a href="projeto_de_software.html" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white transition-colors bg-slate-800/50 hover:bg-slate-800 rounded-lg border border-slate-700/50">
+                <i class="fa-solid fa-moon"></i> Versão Premium
+            </a>
+            
+            <!-- Botão de Imprimir (Salvar como PDF) -->
+            <button onclick="window.print()" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-100 bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow transition">
+                <i class="fa-solid fa-print"></i> Salvar como PDF / Imprimir
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTAINER DAS PÁGINAS A4 -->
+    <div class="document-container" id="word-content">
+
+        <!-- ================= PÁGINA 1: INTRODUÇÃO E ESCOPO ================= -->
+        <div class="page" id="page-1">
+            <!-- Cabeçalho da página -->
+            <div class="page-header">
+                <span>Aethos Lab — Projeto de Software</span>
+                <span>Seção 5</span>
+            </div>
+
+            <!-- Conteúdo da página -->
+            <div class="page-content">
+                <h1 class="doc-title mt-6">5. PROJETO DE SOFTWARE</h1>
+                
+                <p class="doc-text">
+                    Diante dos problemas de mobilidade urbana e da dificuldade em localizar pontos de prática esportiva na região, a equipe propôs o desenvolvimento do <strong>Aethos</strong>, uma aplicação web <em>mobile-first</em> modularizada para <em>desktop</em>. A escolha por uma aplicação web fundamenta-se na facilidade de distribuição, independência de instalação de pacotes em lojas de aplicativos e alta compatibilidade cross-platform (iOS, Android, Windows, macOS).
+                </p>
+
+                <p class="doc-text">
+                    O sistema opera sob o padrão cliente-servidor de três camadas estruturado da seguinte forma:
+                </p>
+
+                <ul class="doc-list">
+                    <li><strong>Camada de Apresentação (Frontend)</strong>: Construída de forma modular utilizando HTML5, CSS3 (Tailwind CSS e Liquid Glassmorphic styling) e lógica cliente em <strong>jQuery/JavaScript</strong>, integrando APIs geográficas diretamente no navegador.</li>
+                    <li><strong>Camada de Aplicação/Negócio (Backend)</strong>: Desenvolvida em <strong>PHP</strong>, responsável pelas validações de regras de negócios (verificação de CPF, checagem de e-mails existentes, gerenciamento de sessões seguras e controle de autenticação administrativa).</li>
+                    <li><strong>Camada de Dados (Banco de Dados)</strong>: Gerenciada pelo SGBD <strong>MySQL</strong>, garantindo consistência relacional e armazenamento seguro por meio de hashing BCRYPT para senhas.</li>
+                </ul>
+
+                <h2 class="doc-subtitle">5.1 Concepção do software</h2>
+                
+                <p class="doc-text">
+                    A arquitetura do Aethos baseia-se em baixo acoplamento e independência de componentes. O diagrama de componentes a seguir descreve a organização modular do frontend, do backend PHP e sua comunicação com o banco de dados e APIs externas.
+                </p>
+
+                <p class="doc-text">
+                    O fluxo de dados inicia-se no cliente que realiza requisições assíncronas assinaladas via AJAX. Essas requisições chegam aos endpoints correspondentes no PHP, que valida o estado e consulta o banco de dados via PDO para retornar respostas formatadas em JSON.
+                </p>
+            </div>
+
+            <!-- Rodapé da página -->
+            <div class="page-footer">
+                <span>Aethos - Conexão Esportiva</span>
+                <span>Página 1</span>
+            </div>
+        </div>
+
+        <!-- ================= PÁGINA 2: DIAGRAMAS DE CONCEPÇÃO ================= -->
+        <div class="page" id="page-2">
+            <div class="page-header">
+                <span>Aethos Lab — Projeto de Software</span>
+                <span>Seção 5.1</span>
+            </div>
+
+            <div class="page-content">
+                <h3 class="doc-section mt-4">Figura 1 - Diagrama de Componentes do Sistema Aethos</h3>
+                <div class="mermaid">
+graph TD
+    subgraph Frontend_Client [Navegador do Usuário - Frontend]
+        direction TB
+        index_html["index.html (Visão do Mapa)"]
+        login_html["login.html (Acesso / Cadastro)"]
+        nova_senha_html["nova_senha.html (Reset Senha)"]
+        mapa_js["mapa.js (Leaflet & Nominatim)"]
+        auth_js["auth.js (Validações & AJAX)"]
+        style_css["style.css (Identidade Visual & Liquid Glass)"]
+    end
+
+    subgraph Backend_Server [Servidor de Aplicação - Backend PHP]
+        direction TB
+        conexao_php["conexao.php (PDO Connection)"]
+        login_php["login.php (Validação de Acesso)"]
+        register_php["register.php (Cadastro de Perfis)"]
+        trocar_senha_php["trocar_senha.php (Alteração Obrigatória)"]
+    end
+
+    subgraph Database_Server [Servidor de Banco de Dados]
+        database[("aethos_db (MySQL)")]
+    end
+
+    subgraph External_Services [APIs de Terceiros]
+        osm_api["API Nominatim & Tiles (OpenStreetMap)"]
+        geo_api["Serviço de Geolocalização do Navegador"]
+    end
+
+    auth_js -->|Requisições AJAX| login_php
+    auth_js -->|Requisições AJAX| register_php
+    nova_senha_html -->|Requisições AJAX| trocar_senha_php
+    
+    login_php --> conexao_php
+    register_php --> conexao_php
+    trocar_senha_php --> conexao_php
+    conexao_php --> database
+
+    mapa_js --> geo_api
+    mapa_js --> osm_api
+    index_html --> mapa_js
+    login_html --> auth_js
+                </div>
+                <div class="doc-caption">Figura 1: Mapeamento de arquivos frontend, scripts de controle, backend em PHP e banco de dados.</div>
+
+                <h3 class="doc-section">Figura 2 - Diagrama de Implantação do Sistema Aethos</h3>
+                <div class="mermaid">
+graph TD
+    subgraph Cliente [Computador / Smartphone Cliente]
+        Nav["Navegador Internet (Leaflet Engine)"]
+    end
+
+    subgraph ServidorWeb [Servidor de Aplicação Web]
+        Apache["Servidor Apache (PHP Engine)"]
+        Logs["Arquivos de Logs de Ações & Erros"]
+    end
+
+    subgraph ServidorDB [Servidor de Banco de Dados]
+        MySQL[("Banco de Dados MySQL (aethos_db)")]
+    end
+
+    subgraph ServidorOSM [Servidores OpenStreetMap]
+        Tiles["API Nominatim (Autocomplete & Map Tiles)"]
+    end
+
+    Nav -->|HTTPS / GET - POST| Apache
+    Nav -->|HTTPS / Fetch Requests| Tiles
+    Apache -->|PDO Connection - Porta 3306| MySQL
+    Apache -->|Escreve Logs| Logs
+                </div>
+                <div class="doc-caption">Figura 2: Diagrama físico de implantação com os nós de processamento e protocolos.</div>
+            </div>
+
+            <div class="page-footer">
+                <span>Aethos - Conexão Esportiva</span>
+                <span>Página 2</span>
+            </div>
+        </div>
+
+        <!-- ================= PÁGINA 3: REQUISITOS FUNCIONAIS (RF01 - RF09) ================= -->
+        <div class="page" id="page-3">
+            <div class="page-header">
+                <span>Aethos Lab — Projeto de Software</span>
+                <span>Seção 5.2</span>
+            </div>
+
+            <div class="page-content">
+                <h2 class="doc-subtitle mt-4">5.2 Requisitos funcionais e não-funcionais</h2>
+                <p class="doc-text">
+                    A engenharia de requisitos do Aethos seguiu as regras de especificação de software para garantir que todas as necessidades dos perfis de usuário (Atleta, Professor, Administrador e Desenvolvedor) fossem mapeadas com clareza.
+                </p>
+
+                <h3 class="doc-section">Tabela 1 - Requisitos Funcionais do Sistema (Parte 1)</h3>
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 25%;">Nome</th>
+                            <th style="width: 45%;">Descrição</th>
+                            <th style="width: 10%;">Prior.</th>
+                            <th style="width: 10%;">Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>RF01</strong></td>
+                            <td>Cadastro de Atletas</td>
+                            <td>Permitir o cadastro de usuários comuns (atletas) com Foto, Nome, Apelido, DDD, Telefone, E-mail e Senha.</td>
+                            <td>Alta</td>
+                            <td>Cad.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF02</strong></td>
+                            <td>Cadastro de Professores</td>
+                            <td>Permitir o cadastro de professores com campos obrigatórios adicionais: Endereço Fixo e CPF.</td>
+                            <td>Alta</td>
+                            <td>Cad.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF03</strong></td>
+                            <td>Validação de CPF</td>
+                            <td>Validar a integridade e veracidade do CPF informado pelo professor no cadastro.</td>
+                            <td>Alta</td>
+                            <td>Regra</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF04</strong></td>
+                            <td>Autenticação por Perfil</td>
+                            <td>Efetuar login no sistema diferenciando os níveis de acesso de cada usuário.</td>
+                            <td>Alta</td>
+                            <td>Seg.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF05</strong></td>
+                            <td>Login Dev por Nome</td>
+                            <td>Permitir acesso de desenvolvedores digitando o nome (ex. Arthur, Lorrany, Nepo) ao invés do e-mail.</td>
+                            <td>Alta</td>
+                            <td>Seg.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF06</strong></td>
+                            <td>Troca de Senha Obrigatória</td>
+                            <td>Exigir a troca da senha padrão inicial ("senha123") no primeiro login de Administradores/Desenvolvedores.</td>
+                            <td>Alta</td>
+                            <td>Seg.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF07</strong></td>
+                            <td>Exibir/Ocultar Senha</td>
+                            <td>Fornecer o botão de olho nas senhas para exibir ou ocultar os caracteres.</td>
+                            <td>Média</td>
+                            <td>Int.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF08</strong></td>
+                            <td>Solicitação de Localização</td>
+                            <td>Pedir autorização do usuário antes de capturar e usar sua localização GPS.</td>
+                            <td>Alta</td>
+                            <td>Geol.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF09</strong></td>
+                            <td>Centralização no Mapa</td>
+                            <td>Centralizar o mapa na localização GPS do usuário após obtenção dos dados.</td>
+                            <td>Alta</td>
+                            <td>Int.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="doc-caption">Tabela 1: Requisitos Funcionais do Sistema (RF01 a RF09).</div>
+            </div>
+
+            <div class="page-footer">
+                <span>Aethos - Conexão Esportiva</span>
+                <span>Página 3</span>
+            </div>
+        </div>
+
+        <!-- ================= PÁGINA 4: REQUISITOS PARTE 2 E CASOS DE USO ================= -->
+        <div class="page" id="page-4">
+            <div class="page-header">
+                <span>Aethos Lab — Projeto de Software</span>
+                <span>Seção 5.2 & 5.3</span>
+            </div>
+
+            <div class="page-content">
+                <h3 class="doc-section mt-4">Tabela 1 - Requisitos Funcionais do Sistema (Parte 2)</h3>
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">ID</th>
+                            <th style="width: 25%;">Nome</th>
+                            <th style="width: 45%;">Descrição</th>
+                            <th style="width: 10%;">Prior.</th>
+                            <th style="width: 10%;">Tipo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>RF10</strong></td>
+                            <td>Cadastro de Locais</td>
+                            <td>Permitir que professores proponham novos locais esportivos no mapa através de formulário.</td>
+                            <td>Alta</td>
+                            <td>Cad.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF11</strong></td>
+                            <td>Moderação de Locais</td>
+                            <td>Novos locais propostos necessitam de aprovação prévia de um Administrador para aparecerem no mapa.</td>
+                            <td>Alta</td>
+                            <td>Regra</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF12</strong></td>
+                            <td>Avaliações e Comentários</td>
+                            <td>Permitir que atletas avaliem com notas (1-5) e comentários os locais esportivos e professores.</td>
+                            <td>Média</td>
+                            <td>Inter.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF13</strong></td>
+                            <td>Painel de Logs (Dev)</td>
+                            <td>Acesso dos desenvolvedores a um painel com log de auditoria detalhado e rastreabilidade de erros.</td>
+                            <td>Alta</td>
+                            <td>Ger.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF14</strong></td>
+                            <td>Gerenciamento profundo</td>
+                            <td>Poder administrativo completo para remover comentários, excluir contas e gerenciar banco.</td>
+                            <td>Alta</td>
+                            <td>Mod.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF15</strong></td>
+                            <td>Recuperação de Senha</td>
+                            <td>Envio de código de segurança para o e-mail cadastrado para redefinição de senha.</td>
+                            <td>Média</td>
+                            <td>Com.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="doc-section">Tabela 2 - Requisitos Não-Funcionais (Mapeados)</h3>
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">ID</th>
+                            <th style="width: 28%;">Nome</th>
+                            <th style="width: 45%;">Descrição / Métrica</th>
+                            <th style="width: 15%;">Categoria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>RNF01</strong></td>
+                            <td>Compatibilidade Browser</td>
+                            <td>Funcionamento correto no Chrome, Safari, Firefox e Edge.</td>
+                            <td>Compatibilidade</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RNF02</strong></td>
+                            <td>Design Mobile-First</td>
+                            <td>Interface adaptada nativamente a smartphones e redimensionável para PCs.</td>
+                            <td>Usabilidade</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RNF03</strong></td>
+                            <td>LGPD</td>
+                            <td>Armazenamento e processamento de dados sob as regras e leis da LGPD.</td>
+                            <td>Segurança</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RNF04</strong></td>
+                            <td>Criptografia Bcrypt</td>
+                            <td>Todas as senhas de usuários devem possuir hashing irreversível Bcrypt no banco.</td>
+                            <td>Segurança</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RNF05</strong></td>
+                            <td>Tempo de Resposta GPS</td>
+                            <td>Exibição de pins próximos no mapa em menos de 2s após a obtenção do GPS.</td>
+                            <td>Desempenho</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="page-footer">
+                <span>Aethos - Conexão Esportiva</span>
+                <span>Página 4</span>
+            </div>
+        </div>
+
+        <!-- ================= PÁGINA 5: DIAGRAMA DE CASOS DE USO E CLASSE ================= -->
+        <div class="page" id="page-5">
+            <div class="page-header">
+                <span>Aethos Lab — Projeto de Software</span>
+                <span>Seção 5.3 & 5.4</span>
+            </div>
+
+            <div class="page-content">
+                <h2 class="doc-subtitle mt-4">5.3 Diagrama de caso de uso</h2>
+                <div class="mermaid">
+graph LR
+    subgraph Atores
+        Guest["Não Autenticado"]
+        Atleta["Atleta"]
+        Professor["Professor"]
+        Admin["Admin"]
+        Dev["Desenvolvedor"]
+    end
+
+    subgraph Sistema [Aethos System]
+        UC1("(Visualizar Mapa)")
+        UC2("(Buscar Pontos)")
+        UC3("(Cadastrar Perfil)")
+        UC4("(Avaliar Local)")
+        UC5("(Propor Local)")
+        UC6("(Aprovar Locais)")
+        UC7("(Painel de Logs)")
+        UC8("(Troca de Senha)")
+    end
+
+    Guest --> UC1
+    Guest --> UC2
+    Guest --> UC3
+    
+    Atleta --> UC4
+    Professor --> UC5
+    
+    Admin --> UC6
+    Admin --> UC8
+
+    Dev --> UC7
+    Dev --> UC6
+                </div>
+                <div class="doc-caption">Figura 3: Casos de uso do sistema mapeados por atores.</div>
+
+                <h2 class="doc-subtitle">5.4 Diagrama de classe</h2>
+                <div class="mermaid">
+classDiagram
+    class Usuario {
+        +int id
+        +string tipo_usuario
+        +string nome
+        +string email
+        +string senha
+        +login() boolean
+    }
+
+    class Atleta {
+        +fazerAvaliacao()
+    }
+
+    class Professor {
+        +string cpf
+        +string endereco_fixo
+        +proporLocal()
+    }
+
+    class Administrador {
+        +aprovarLocal()
+        +removerAvaliacao()
+    }
+
+    class Desenvolvedor {
+        +visualizarLogs()
+    }
+
+    Usuario <|-- Atleta
+    Usuario <|-- Professor
+    Usuario <|-- Administrador
+    Administrador <|-- Desenvolvedor
+                </div>
+                <div class="doc-caption">Figura 4: Diagrama de Classes e Hierarquias de Usuário.</div>
+            </div>
+
+            <div class="page-footer">
+                <span>Aethos - Conexão Esportiva</span>
+                <span>Página 5</span>
+            </div>
+        </div>
+
+        <!-- ================= PÁGINA 6: DER E IDENTIDADE VISUAL ================= -->
+        <div class="page" id="page-6">
+            <div class="page-header">
+                <span>Aethos Lab — Projeto de Software</span>
+                <span>Seção 5.5 & 5.6</span>
+            </div>
+
+            <div class="page-content">
+                <h2 class="doc-subtitle mt-4">5.5 Diagrama entidade-relacionamento (DER)</h2>
+                <div class="mermaid">
+erDiagram
+    USUARIOS {
+        int id PK
+        enum tipo_usuario
+        varchar nome
+        varchar email
+        varchar senha
+        varchar cpf
+        text endereco_fixo
+    }
+    LOCAIS_ESPORTIVOS {
+        int id PK
+        int professor_id FK
+        varchar nome_local
+        double latitude
+        double longitude
+        boolean aprovado
+    }
+    AVALIACOES {
+        int id PK
+        int atleta_id FK
+        int local_id FK
+        int nota
+        text comentario
+    }
+
+    USUARIOS ||--o{ LOCAIS_ESPORTIVOS : "cadastra"
+    USUARIOS ||--o{ AVALIACOES : "avalia"
+    LOCAIS_ESPORTIVOS ||--o{ AVALIACOES : "recebe"
+                </div>
+                <div class="doc-caption">Figura 5: Modelo Lógico do Banco de Dados Relacional.</div>
+
+                <h2 class="doc-subtitle">5.6 Identidade visual do software</h2>
+                <p class="doc-text">
+                    A identidade visual é baseada na refração digital com paleta de cores balanceada na regra 70-20-10 para maior conforto noturno. A tipografia usa as fontes <strong>Plus Jakarta Sans</strong> para títulos de destaque e <strong>Inter</strong> para maior legibilidade em textos e dados.
+                </p>
+
+                <div class="grid grid-cols-2 gap-4 items-center">
+                    <div>
+                        <img src="color_palette.png" alt="Paleta de Cores Aethos" class="doc-img">
+                        <div class="doc-caption">Figura 6: Paleta de Cores Aethos.</div>
+                    </div>
+                    <div>
+                        <img src="typography.png" alt="Tipografia Aethos" class="doc-img">
+                        <div class="doc-caption">Figura 7: Tipografia do Sistema Aethos.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <span>Aethos - Conexão Esportiva</span>
+                <span>Página 6</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTÃO DE EXPORTAÇÃO PARA WORD (Não aparece na impressão nem na exportação) -->
+    <div class="no-print flex justify-center mt-6 mb-12">
+        <button id="btn-export-word" onclick="exportToWord()" class="flex items-center gap-3 px-8 py-4 text-md font-bold text-white bg-green-600 hover:bg-green-700 active:scale-95 transform transition rounded-xl shadow-2xl shadow-green-500/20">
+            <i class="fa-solid fa-file-word text-xl"></i> Exportar Página como Documento Word (.doc)
+        </button>
+    </div>
+
+    <!-- SCRIPTS DE MANIPULAÇÃO DO VISUALIZADOR -->
+    <script>
+        // Função utilitária para converter SVG (Mermaid) para imagem PNG base64
+        function convertSvgToPng(svgElement) {
+            return new Promise((resolve) => {
+                try {
+                    const svgClone = svgElement.cloneNode(true);
+                    
+                    // Remove all @import and @font-face rules to prevent canvas tainting from cross-origin network requests
+                    const styles = svgClone.querySelectorAll('style');
+                    styles.forEach(style => {
+                        let cssText = style.textContent;
+                        // Remove @import rules
+                        cssText = cssText.replace(/@import\s+url\([^)]+\);?/gi, '');
+                        // Remove @font-face rules
+                        cssText = cssText.replace(/@font-face\s*\{[\s\S]*?\}/gi, '');
+                        style.textContent = cssText;
+                    });
+
+                    const svgString = new XMLSerializer().serializeToString(svgClone);
+                    // Adicionar largura e altura em pixels caso falte
+                    const bounds = svgElement.getBoundingClientRect();
+                    const width = bounds.width || 800;
+                    const height = bounds.height || 600;
+                    
+                    // Convert SVG string to base64 Data URL to prevent canvas tainting in Chrome
+                    const base64Svg = btoa(unescape(encodeURIComponent(svgString)));
+                    const dataURL = 'data:image/svg+xml;base64,' + base64Svg;
+                    
+                    const image = new Image();
+                    image.onload = () => {
+                        try {
+                            const canvas = document.createElement('canvas');
+                            // Multiplicamos por 2 para gerar imagens de maior definição para impressão/Word (Retina Quality)
+                            canvas.width = width * 2;
+                            canvas.height = height * 2;
+                            const context = canvas.getContext('2d');
+                            context.fillStyle = '#ffffff'; // Fundo branco padrão
+                            context.fillRect(0, 0, canvas.width, canvas.height);
+                            context.scale(2, 2);
+                            context.drawImage(image, 0, 0, width, height);
+                            
+                            const png = canvas.toDataURL('image/png');
+                            resolve(png);
+                        } catch (err) {
+                            console.error("Canvas toDataURL failed during SVG conversion:", err);
+                            resolve(null);
+                        }
+                    };
+                    image.onerror = (e) => {
+                        console.error("Image loading failed for SVG conversion", e);
+                        resolve(null);
+                    };
+                    image.src = dataURL;
+                } catch (e) {
+                    console.error("Error converting SVG to PNG:", e);
+                    resolve(null);
+                }
+            });
+        }
+
+        // Função utilitária para converter uma tag <img> local para base64
+        function getBase64FromImageElement(img) {
+            try {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.naturalWidth || img.width;
+                canvas.height = img.naturalHeight || img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                return canvas.toDataURL("image/png");
+            } catch (e) {
+                console.error("Canvas read failed, using relative path", e);
+                return null;
+            }
+        }
+
+        // Função utilitária para baixar arquivo via XHR e converter em base64 (Altamente confiável para CORS same-origin)
+        function fetchImageAsBase64(url) {
+            return new Promise((resolve) => {
+                try {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onload = function() {
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                            resolve(reader.result);
+                        };
+                        reader.readAsDataURL(xhr.response);
+                    };
+                    xhr.onerror = function() {
+                        console.error("XHR failed to fetch image: " + url);
+                        resolve(null);
+                    };
+                    xhr.open('GET', url);
+                    xhr.responseType = 'blob';
+                    xhr.send();
+                } catch (e) {
+                    console.error("Error in fetchImageAsBase64 for " + url, e);
+                    resolve(null);
+                }
+            });
+        }
+
+        // Função de Exportação Principal
+        async function exportToWord() {
+            const btn = document.getElementById('btn-export-word');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Processando Imagens...';
+            btn.disabled = true;
+
+            // Clona o contêiner do documento para manipulação segura em memória
+            const contentClone = document.getElementById("word-content").cloneNode(true);
+
+            // 1. Remover elementos desnecessários (cabeçalhos do visualizador, rodapés no topo de folhas se houver)
+            const removeEls = contentClone.querySelectorAll('.no-print, .no-export, header, button');
+            removeEls.forEach(el => el.parentNode.removeChild(el));
+
+            // 2. Localizar todos os SVGs (Mermaid) na página original e convertê-los em PNGs na cópia
+            const originalMermaidSvgs = document.querySelectorAll('.mermaid svg');
+            const clonedMermaidDivs = contentClone.querySelectorAll('.mermaid');
+
+            for (let i = 0; i < originalMermaidSvgs.length; i++) {
+                const svg = originalMermaidSvgs[i];
+                const targetDiv = clonedMermaidDivs[i];
+                if (svg && targetDiv) {
+                    const bounds = svg.getBoundingClientRect();
+                    const width = bounds.width || 800;
+                    const height = bounds.height || 600;
+                    const aspect = height / width;
+                    const targetWidthCm = 15;
+                    const targetHeightCm = targetWidthCm * aspect;
+                    const pixelWidth = 560;
+                    const pixelHeight = Math.round(560 * aspect);
+
+                    // Clone the SVG and force physical width/height attributes inline on the <svg> element itself for Word compatibility
+                    const svgClone = svg.cloneNode(true);
+                    svgClone.setAttribute('width', pixelWidth.toString());
+                    svgClone.setAttribute('height', pixelHeight.toString());
+                    svgClone.style.cssText = "width: " + targetWidthCm + "cm; height: " + targetHeightCm + "cm; display: block; margin: 10px auto;";
+
+                    const pngBase64 = await convertSvgToPng(svg);
+                    if (pngBase64) {
+                        const img = document.createElement('img');
+                        img.src = pngBase64;
+                        // Use inline CSS width and height in centimeters with aspect ratio to prevent stretching in MS Word
+                        img.style.cssText = "width: " + targetWidthCm + "cm; height: " + targetHeightCm + "cm; display: block; margin: 10px auto;";
+                        img.setAttribute('width', pixelWidth.toString());
+                        img.setAttribute('height', pixelHeight.toString());
+                        // Substitui o SVG na cópia
+                        targetDiv.innerHTML = '';
+                        targetDiv.appendChild(img);
+                    } else {
+                        // Fallback: If PNG conversion fails (due to browser security), use the styled SVG clone!
+                        // Microsoft Word 2019/365 supports inline SVG if sized explicitly on the <svg> tag.
+                        targetDiv.innerHTML = '';
+                        targetDiv.appendChild(svgClone);
+                    }
+                }
+            }
+
+            // 3. Converter imagens relativas locais (paleta e tipografia) para base64 embutida e definir dimensões exatas sem distorção
+            const originalContentImgs = document.getElementById("word-content").querySelectorAll('img');
+            const clonedContentImgs = Array.from(contentClone.querySelectorAll('img')).filter(img => !img.closest('.mermaid'));
+
+            for (let i = 0; i < originalContentImgs.length; i++) {
+                const oImg = originalContentImgs[i];
+                const cImg = clonedContentImgs[i];
+                if (oImg && cImg) {
+                    const src = oImg.getAttribute('src');
+                    if (src && !src.startsWith('data:') && !src.startsWith('http')) {
+                        // Use XHR reader as it is extremely reliable and bypasses canvas tainting on same-origin
+                        const base64 = await fetchImageAsBase64(src);
+                        if (base64) {
+                            cImg.setAttribute('src', base64);
+                        } else {
+                            // Canvas fallback
+                            const canvasBase64 = getBase64FromImageElement(oImg);
+                            if (canvasBase64) {
+                                cImg.setAttribute('src', canvasBase64);
+                            }
+                        }
+                    }
+                    
+                    // For Word compatibility, force specific width and height constraints inline based on actual aspect ratio
+                    const imgWidth = oImg.naturalWidth || oImg.width || 800;
+                    const imgHeight = oImg.naturalHeight || oImg.height || 600;
+                    const aspect = imgHeight / imgWidth;
+                    
+                    // Standard width for content images is 7.5cm (fits nicely centered)
+                    const targetWidthCm = 7.5;
+                    const targetHeightCm = targetWidthCm * aspect;
+                    const pixelWidth = 280;
+                    const pixelHeight = Math.round(pixelWidth * aspect);
+                    
+                    cImg.style.cssText = "width: " + targetWidthCm + "cm; height: " + targetHeightCm + "cm; display: block; margin: 5px auto;";
+                    cImg.setAttribute('width', pixelWidth.toString());
+                    cImg.setAttribute('height', pixelHeight.toString());
+                }
+            }
+
+            const header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " +
+                           "xmlns:w='urn:schemas-microsoft-com:office:word' " +
+                           "xmlns='http://www.w3.org/TR/REC-html40'>" +
+                           "<head><title>Aethos - Projeto de Software</title>" +
+                           "<style>" +
+                           "body { font-family: 'Calibri', 'Arial', sans-serif; font-size: 11pt; color: #000000; line-height: 1.5; background-color: #ffffff; }" +
+                           "h1.doc-title { font-size: 16pt; font-weight: bold; color: #1f4e79; margin-top: 24pt; margin-bottom: 12pt; text-transform: uppercase; border-bottom: 1px solid #1f4e79; padding-bottom: 3px; page-break-before: always; }" +
+                           "h2.doc-subtitle { font-size: 13pt; font-weight: bold; color: #2e75b6; margin-top: 18pt; margin-bottom: 6pt; }" +
+                           "h3.doc-section { font-size: 11pt; font-weight: bold; color: #2e75b6; margin-top: 12pt; margin-bottom: 4pt; }" +
+                           "p.doc-text { margin-bottom: 8pt; text-align: justify; text-indent: 1.25cm; }" +
+                           "p.doc-text-no-indent { margin-bottom: 8pt; text-align: justify; }" +
+                           "table { width: 100%; border-collapse: collapse; margin-top: 12pt; margin-bottom: 12pt; }" +
+                           "th, td { border: 1px solid #7f7f7f; padding: 6px; text-align: left; vertical-align: middle; font-size: 9.5pt; }" +
+                           "th { background-color: #f2f2f2; font-weight: bold; color: #1f4e79; }" +
+                           "ul { margin-left: 1.5cm; margin-bottom: 8pt; }" +
+                           "li { margin-bottom: 3pt; }" +
+                           "img { max-width: 100%; height: auto; }" +
+                           ".mermaid img { width: 15cm; height: auto; display: block; margin: 10px auto; }" +
+                           ".doc-img { width: 7.5cm; height: auto; display: block; margin: 5px auto; }" +
+                           ".page { background: #ffffff; padding: 0; margin: 0; }" +
+                           ".page-header, .page-footer { display: none; }" + // Ocultar cabeçalhos de folha simulados no Word
+                           ".doc-caption { font-size: 8.5pt; font-style: italic; text-align: center; margin-top: 4pt; margin-bottom: 8pt; color: #4f4f4f; }" +
+                           "</style>" +
+                           "</head><body>";
+            const footer = "</body></html>";
+
+            const htmlContent = header + contentClone.innerHTML + footer;
+
+            // 5. Criar o blob do arquivo e realizar o download automático
+            const blob = new Blob(['\ufeff' + htmlContent], {
+                type: 'application/msword'
+            });
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "projeto_de_software.doc";
+            document.body.appendChild(a);
+            a.click();
+            
+            // Cleanup e restauração do botão
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
+
