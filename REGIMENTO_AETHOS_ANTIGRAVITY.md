@@ -73,6 +73,14 @@ Após login bem-sucedido, cada perfil vai para uma página diferente:
 | Administrador | `admin.html` | `nova_senha.html` |
 | Desenvolvedor | `dev.html` | `nova_senha.html` |
 
+### 2.7 Lei da Jornada Completa (UX, Estado e Reflexos da UI)
+**Nenhuma funcionalidade deve ser entregue isoladamente (apenas o backend ou apenas o botão).** Toda feature (como Login, Cadastro, Upload, CRUDs) deve ser projetada como uma **Jornada de Usuário Completa**, cumprindo rigorosamente os seguintes critérios de aceite:
+1. **Tratamento de Estado Visual (Loading):** Durante requisições AJAX, o botão deve entrar em estado de carregamento (ex: desabilitado, alterando texto para "Carregando..." ou exibindo um spinner CSS/FontAwesome). O usuário nunca pode ficar sem feedback visual enquanto o servidor processa.
+2. **Feedback e Tratamento de Erros Amigável:** O servidor sempre retornará JSON com `sucesso` e `mensagem`. O frontend (jQuery) deve capturar isso e renderizar mensagens amigáveis na tela (em `divs` de alerta estilizadas com Tailwind), diferenciando visualmente Sucesso (Verde) e Erro (Vermelho).
+3. **Reflexo Visual de Sessão Global (Header/Navbar):** Quando uma ação muda o estado global (como Login ou Logout), a interface deve refletir isso. Por exemplo: se o usuário estiver logado, a Navbar deve **ocultar** os botões "Entrar / Cadastrar" e **exibir** "Meu Perfil", "Sair" e a foto do usuário. Isso exige que toda página faça uma checagem rápida (`backend/verificar_sessao.php`) no carregamento para adaptar o header.
+4. **Redirecionamentos e Navegação Limpa:** Após o sucesso de fluxos críticos (Login, Cadastro, Atualização de Senha), o usuário deve ser redirecionado automaticamente para a rota pertinente, sem ficar preso em uma tela de sucesso estática.
+5. **Completude de Funcionalidade:** Features "comuns" não podem ser entregues pela metade. (ex: "Listagem" exige paginação/scroll e busca; "Exclusão" exige Modal de Confirmação; "Upload" exige preview da imagem na tela antes de enviar).
+
 ---
 
 ## 3. ESTADO ATUAL DO SISTEMA (O que já existe no repositório)
