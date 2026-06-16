@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aethos — Painel do Desenvolvedor com logs do sistema e controles técnicos avançados.">
+    <title>Painel Dev — Aethos</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --azul:    #0D0F32;
+            --lavanda: #A5B4FC;
+            --branco:  #FFFFFF;
+            --glass:   rgba(13,15,50,0.65);
+            --border:  rgba(165,180,252,0.2);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--azul);
+            color: var(--branco);
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 10% 20%, rgba(165,180,252,0.06) 0%, transparent 50%);
+        }
+
+        /* HEADER */
+        .header {
+            background: rgba(13,15,50,0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--lavanda); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+        .dev-tag { font-size: 0.65rem; background: rgba(165,180,252,0.15); border: 1px solid var(--border); padding: 2px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; color: var(--lavanda); }
+        .header-right { display: flex; align-items: center; gap: 1rem; }
+        .user-badge { display: flex; align-items: center; gap: 0.6rem; background: rgba(165,180,252,0.08); border: 1px solid var(--border); border-radius: 40px; padding: 0.35rem 1rem; }
+        .user-badge-nome { font-size: 0.85rem; font-weight: 500; }
+        .badge-role-dev { font-size: 0.7rem; color: #818CF8; background: rgba(129,140,248,0.1); border-radius: 4px; padding: 1px 6px; }
+        .btn-sair { background: transparent; border: 1px solid rgba(165,180,252,0.3); color: var(--lavanda); border-radius: 8px; padding: 0.4rem 1rem; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .btn-sair:hover { background: rgba(165,180,252,0.1); }
+
+        /* LAYOUT */
+        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); }
+
+        /* SIDEBAR */
+        .sidebar { background: rgba(13,15,50,0.4); border-right: 1px solid var(--border); padding: 1.5rem 0; }
+        .sidebar-section { padding: 0.5rem 1.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.25); margin-bottom: 0.25rem; margin-top: 1rem; }
+        .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.5rem; cursor: pointer; font-size: 0.875rem; color: rgba(255,255,255,0.55); transition: all 0.2s; border-left: 3px solid transparent; }
+        .sidebar-item:hover { color: var(--branco); background: rgba(165,180,252,0.05); }
+        .sidebar-item.ativo { color: var(--lavanda); border-left-color: var(--lavanda); background: rgba(165,180,252,0.07); }
+        .sidebar-item i { width: 18px; text-align: center; }
+        .badge-count { margin-left: auto; background: rgba(239,68,68,0.8); color: #fff; border-radius: 10px; font-size: 0.7rem; padding: 1px 7px; font-weight: 700; display: none; }
+
+        /* CONTENT */
+        .content { padding: 2rem; overflow-y: auto; }
+        .painel-titulo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .painel-sub { color: rgba(255,255,255,0.4); font-size: 0.875rem; margin-bottom: 2rem; }
+
+        .tab-panel { display: none; }
+        .tab-panel.ativa { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* TABELAS */
+        .glass-table { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; width: 100%; }
+        .glass-table table { width: 100%; border-collapse: collapse; }
+        .glass-table thead th { background: rgba(165,180,252,0.08); padding: 0.9rem 1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--lavanda); font-weight: 600; text-align: left; }
+        .glass-table tbody tr { border-top: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+        .glass-table tbody tr:hover { background: rgba(165,180,252,0.04); }
+        .glass-table tbody td { padding: 0.8rem 1rem; font-size: 0.83rem; vertical-align: middle; }
+        .loading-row td, .empty-row td { text-align: center; padding: 2.5rem; color: rgba(255,255,255,0.3); }
+
+        /* BADGES DE NÍVEL */
+        .badge-nivel { padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 0.72rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+        .nivel-INFO    { background: rgba(165,180,252,0.15); color: var(--lavanda); border: 1px solid rgba(165,180,252,0.3); }
+        .nivel-AVISO   { background: rgba(251,191,36,0.15);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+        .nivel-ERRO    { background: rgba(249,115,22,0.15);  color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
+        .nivel-CRITICO { background: rgba(239,68,68,0.15);   color: #f87171; border: 1px solid rgba(239,68,68,0.3); animation: pulso 1.5s infinite; }
+        @keyframes pulso { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+        /* CONTADORES */
+        .counters-bar {
+            display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+        }
+        .counter-card {
+            background: var(--glass); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem;
+            min-width: 160px;
+        }
+        .counter-number { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 800; }
+        .counter-label  { font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+
+        /* FILTROS */
+        .filtros-bar { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem; }
+        .filtros-bar input, .filtros-bar select {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            border-radius: 8px; padding: 0.5rem 0.85rem; color: var(--branco);
+            font-family: 'Inter', sans-serif; font-size: 0.875rem; outline: none;
+        }
+        .filtros-bar select option { background: #1a1d4e; }
+        .btn-filtrar { background: rgba(165,180,252,0.15); border: 1px solid var(--border); color: var(--lavanda); border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; }
+        .btn-filtrar:hover { background: rgba(165,180,252,0.25); }
+        .btn-perigo { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #f87171; border-radius: 8px; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; }
+        .btn-perigo:hover { background: rgba(239,68,68,0.2); }
+
+        /* BOTÕES DE AÇÃO */
+        .btn-acao { border: none; border-radius: 6px; padding: 0.35rem 0.75rem; font-size: 0.8rem; cursor: pointer; font-weight: 600; transition: all 0.2s; margin-right: 4px; }
+        .btn-aprovar  { background: rgba(34,197,94,0.15);  color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .btn-rejeitar, .btn-desativar { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .btn-reativar { background: rgba(165,180,252,0.15); color: var(--lavanda); border: 1px solid var(--border); }
+        .btn-csv { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; border-radius: 6px; padding: 0.4rem 0.85rem; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
+        .btn-csv:hover { background: rgba(34,197,94,0.2); }
+
+        /* DB TABLE */
+        .db-card {
+            background: var(--glass); border: 1px solid var(--border); border-radius: 12px;
+            padding: 1.25rem 1.5rem; margin-bottom: 0.75rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .db-card-nome { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--lavanda); }
+        .db-card-count { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 700; }
+        .db-card-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+
+        /* TOAST */
+        .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 9999; display: flex; flex-direction: column; gap: 0.5rem; }
+        .toast { background: rgba(13,15,50,0.95); border: 1px solid var(--border); backdrop-filter: blur(12px); border-radius: 10px; padding: 0.85rem 1.25rem; font-size: 0.875rem; display: flex; align-items: center; gap: 0.75rem; animation: slideIn 0.3s ease; min-width: 280px; }
+        .toast.sucesso { border-color: rgba(34,197,94,0.4); color: #4ade80; }
+        .toast.erro    { border-color: rgba(239,68,68,0.4);  color: #f87171; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* STATUS */
+        .status-badge { padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .status-ativo   { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .status-inativo { background: rgba(239,68,68,0.15); color: #f87171; }
+        .foto-mini { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: rgba(165,180,252,0.1); }
+
+        @media (max-width: 768px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { display: flex; overflow-x: auto; padding: 0; border-right: none; border-bottom: 1px solid var(--border); }
+            .sidebar-item { border-left: none; border-bottom: 3px solid transparent; white-space: nowrap; }
+            .sidebar-item.ativo { border-bottom-color: var(--lavanda); border-left-color: transparent; }
+            .sidebar-section { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <div class="logo">
+        ⬡ Aethos
+        <span class="dev-tag">DEV</span>
+    </div>
+    <div class="header-right">
+        <div class="user-badge">
+            <span class="user-badge-nome" id="h-nome">—</span>
+            <span class="badge-role-dev">Desenvolvedor</span>
+        </div>
+        <button class="btn-sair" id="btn-sair"><i class="fa fa-sign-out-alt"></i> Sair</button>
+    </div>
+</header>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-section">Admin</div>
+        <div class="sidebar-item ativo" data-tab="pendentes"><i class="fa fa-clock"></i> Locais Pendentes <span class="badge-count" id="badge-pendentes">0</span></div>
+        <div class="sidebar-item" data-tab="usuarios"><i class="fa fa-users"></i> Usuários</div>
+        <div class="sidebar-item" data-tab="avaliacoes"><i class="fa fa-star"></i> Avaliações</div>
+        <div class="sidebar-item" data-tab="locais-ativos"><i class="fa fa-map-marker-alt"></i> Locais Ativos</div>
+
+        <div class="sidebar-section">Dev</div>
+        <div class="sidebar-item" data-tab="logs"><i class="fa fa-terminal"></i> Logs do Sistema</div>
+        <div class="sidebar-item" data-tab="database"><i class="fa fa-database"></i> Banco de Dados</div>
+    </aside>
+
+    <!-- CONTENT -->
+    <main class="content">
+        <h1 class="painel-titulo"><i class="fa fa-code" style="color:var(--lavanda); margin-right:0.5rem;"></i>Painel do Desenvolvedor</h1>
+        <p class="painel-sub">Acesso total ao sistema Aethos — logs, banco de dados e controles administrativos.</p>
+
+        <!-- ABA: PENDENTES (igual ao admin) -->
+        <div class="tab-panel ativa" id="tab-pendentes">
+            <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; margin-bottom:1rem;">
+                <i class="fa fa-clock" style="color:var(--lavanda)"></i> Locais Pendentes <span id="count-pendentes" style="font-size:0.85rem; color:rgba(255,255,255,0.4); font-weight:400;"></span>
+            </h2>
+            <div class="glass-table">
+                <table>
+                    <thead><tr><th>Nome</th><th>Modalidade</th><th>Cidade</th><th>Professor</th><th>Data</th><th>Ações</th></tr></thead>
+                    <tbody id="body-pendentes"><tr class="loading-row"><td colspan="6"><i class="fa fa-circle-notch fa-spin"></i></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ABA: USUÁRIOS -->
+        <div class="tab-panel" id="tab-usuarios">
+            <div class="filtros-bar">
+                <input type="text" id="filtro-busca-usr" placeholder="Buscar por nome ou e-mail..." style="flex:1; min-width:200px;">
+                <select id="filtro-tipo-usr"><option value="">Todos</option><option value="comum">Atleta</option><option value="professor">Professor</option><option value="admin">Admin</option></select>
+                <select id="filtro-ativo-usr"><option value="1">Ativos</option><option value="0">Inativos</option><option value="2">Todos</option></select>
+                <button class="btn-filtrar" id="btn-filtrar-usr"><i class="fa fa-search"></i></button>
+            </div>
+            <div class="glass-table">
+                <table><thead><tr><th>Foto</th><th>Nome</th><th>E-mail</th><th>Tipo</th><th>Cadastro</th><th>Status</th><th>Ação</th></tr></thead>
+                <tbody id="body-usuarios"><tr class="loading-row"><td colspan="7"><i class="fa fa-circle-notch fa-spin"></i></td></tr></tbody>
+                </table>
+            </div>
+            <div id="paginacao-usr" style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:center;"></div>
+        </div>
+
+        <!-- ABA: AVALIAÇÕES -->
+        <div class="tab-panel" id="tab-avaliacoes">
+            <div class="filtros-bar">
+                <select id="filtro-nota-av"><option value="">Todas</option><option value="1">★ 1</option><option value="2">★★ 2</option><option value="3">★★★ 3</option><option value="4">★★★★ 4</option><option value="5">★★★★★ 5</option></select>
+                <button class="btn-filtrar" id="btn-filtrar-av"><i class="fa fa-search"></i></button>
+            </div>
+            <div class="glass-table">
+                <table><thead><tr><th>ID</th><th>Local</th><th>Avaliador</th><th>Nota</th><th>Comentário</th><th>Data</th><th>Ação</th></tr></thead>
+                <tbody id="body-avaliacoes"><tr class="loading-row"><td colspan="7"><i class="fa fa-circle-notch fa-spin"></i></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ABA: LOCAIS ATIVOS -->
+        <div class="tab-panel" id="tab-locais-ativos">
+            <div class="glass-table">
+                <table><thead><tr><th>Nome</th><th>Modalidade</th><th>Cidade</th><th>Professor</th><th>Nota</th><th>Ação</th></tr></thead>
+                <tbody id="body-locais-ativos"><tr class="loading-row"><td colspan="6"><i class="fa fa-circle-notch fa-spin"></i></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ABA: LOGS DO SISTEMA -->
+        <div class="tab-panel" id="tab-logs">
+            <!-- Contadores por nível -->
+            <div class="counters-bar" id="counters-logs">
+                <div class="counter-card"><div class="badge-nivel nivel-INFO" style="font-size:1rem; padding:0.4rem 0.8rem;">INFO</div><div><div class="counter-number" id="cnt-info">—</div><div class="counter-label">registros</div></div></div>
+                <div class="counter-card"><div class="badge-nivel nivel-AVISO" style="font-size:1rem; padding:0.4rem 0.8rem;">AVISO</div><div><div class="counter-number" id="cnt-aviso">—</div><div class="counter-label">registros</div></div></div>
+                <div class="counter-card"><div class="badge-nivel nivel-ERRO" style="font-size:1rem; padding:0.4rem 0.8rem;">ERRO</div><div><div class="counter-number" id="cnt-erro">—</div><div class="counter-label">registros</div></div></div>
+                <div class="counter-card"><div class="badge-nivel nivel-CRITICO" style="font-size:1rem; padding:0.4rem 0.8rem;">CRÍTICO</div><div><div class="counter-number" id="cnt-critico">—</div><div class="counter-label">registros</div></div></div>
+            </div>
+
+            <div class="filtros-bar">
+                <select id="filtro-nivel-log">
+                    <option value="">Todos os níveis</option>
+                    <option value="INFO">INFO</option>
+                    <option value="AVISO">AVISO</option>
+                    <option value="ERRO">ERRO</option>
+                    <option value="CRITICO">CRÍTICO</option>
+                </select>
+                <select id="filtro-modulo-log">
+                    <option value="">Todos os módulos</option>
+                    <option value="auth">auth</option>
+                    <option value="locais">locais</option>
+                    <option value="admin">admin</option>
+                    <option value="dev">dev</option>
+                    <option value="database">database</option>
+                    <option value="seguranca">segurança</option>
+                </select>
+                <input type="date" id="filtro-de-log" placeholder="De">
+                <input type="date" id="filtro-ate-log" placeholder="Até">
+                <button class="btn-filtrar" id="btn-filtrar-log"><i class="fa fa-search"></i> Filtrar</button>
+                <button class="btn-perigo" id="btn-limpar-logs"><i class="fa fa-trash"></i> Limpar &gt;30 dias</button>
+            </div>
+
+            <div class="glass-table">
+                <table>
+                    <thead><tr><th>Nível</th><th>Módulo</th><th>Ação</th><th>Descrição</th><th>Usuário</th><th>IP</th><th>Data/Hora</th></tr></thead>
+                    <tbody id="body-logs"><tr class="loading-row"><td colspan="7"><i class="fa fa-circle-notch fa-spin"></i> Carregando logs...</td></tr></tbody>
+                </table>
+            </div>
+            <div id="paginacao-logs" style="margin-top:1rem; display:flex; gap:0.5rem; justify-content:center;"></div>
+        </div>
+
+        <!-- ABA: BANCO DE DADOS -->
+        <div class="tab-panel" id="tab-database">
+            <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:1.1rem; margin-bottom:1.5rem; color:rgba(255,255,255,0.8);">
+                <i class="fa fa-database" style="color:var(--lavanda)"></i> Resumo do Banco de Dados
+            </h2>
+            <div id="db-cards">
+                <div class="loading-row" style="text-align:center; padding:2rem; color:rgba(255,255,255,0.3);">
+                    <i class="fa fa-circle-notch fa-spin"></i> Carregando...
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="js/dev.js"></script>
+</body>
+</html>

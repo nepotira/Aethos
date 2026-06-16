@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aethos — Cadastre seu espaço esportivo e conecte-se com atletas da sua região.">
+    <title>Cadastrar Local — Aethos</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap + FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --azul-marinho: #0D0F32;
+            --lavanda:      #A5B4FC;
+            --branco:       #FFFFFF;
+            --glass-bg:     rgba(13,15,50,0.6);
+            --glass-border: rgba(165,180,252,0.2);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--azul-marinho);
+            min-height: 100vh;
+            color: var(--branco);
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(165,180,252,0.08) 0%, transparent 60%),
+                radial-gradient(circle at 80% 70%, rgba(165,180,252,0.05) 0%, transparent 50%);
+        }
+
+        /* ─── HEADER ─────────────────────────────────── */
+        .header {
+            background: rgba(13,15,50,0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--lavanda);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .btn-sair {
+            background: transparent;
+            border: 1px solid rgba(165,180,252,0.3);
+            color: var(--lavanda);
+            border-radius: 8px;
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-sair:hover { background: rgba(165,180,252,0.1); }
+
+        /* ─── MAIN ───────────────────────────────────── */
+        .main-container {
+            max-width: 800px;
+            margin: 3rem auto;
+            padding: 0 1.5rem 4rem;
+        }
+
+        .page-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--branco);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* ─── CARD FORM ──────────────────────────────── */
+        .form-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--lavanda);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--glass-border);
+        }
+
+        /* ─── FORM INPUTS ────────────────────────────── */
+        .form-group { margin-bottom: 1.25rem; }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 0.4rem;
+        }
+
+        label .obrigatorio { color: var(--lavanda); margin-left: 2px; }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: var(--branco);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: rgba(165,180,252,0.6);
+            background: rgba(255,255,255,0.08);
+        }
+
+        select option { background: #1a1d4e; }
+        textarea { resize: vertical; min-height: 100px; }
+
+        .row-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 576px) {
+            .row-group { grid-template-columns: 1fr; }
+        }
+
+        /* ─── CEP ROW ────────────────────────────────── */
+        .cep-row {
+            display: grid;
+            grid-template-columns: 160px 1fr 1fr 60px;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        @media (max-width: 576px) {
+            .cep-row { grid-template-columns: 1fr 1fr; }
+        }
+
+        .btn-cep {
+            background: rgba(165,180,252,0.15);
+            border: 1px solid rgba(165,180,252,0.3);
+            color: var(--lavanda);
+            border-radius: 10px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        .btn-cep:hover { background: rgba(165,180,252,0.25); }
+
+        /* ─── FOTO UPLOAD ────────────────────────────── */
+        .upload-area {
+            border: 2px dashed var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.02);
+            position: relative;
+        }
+        .upload-area:hover { border-color: rgba(165,180,252,0.5); background: rgba(165,180,252,0.03); }
+        .upload-area.drag-over { border-color: var(--lavanda); background: rgba(165,180,252,0.07); }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-icon { font-size: 2.5rem; color: var(--lavanda); margin-bottom: 0.75rem; }
+        .upload-text { color: rgba(255,255,255,0.6); font-size: 0.9rem; }
+        .upload-text strong { color: var(--lavanda); }
+
+        #preview-capa {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            margin-top: 1rem;
+            display: none;
+            object-fit: cover;
+        }
+
+        /* ─── STATUS MESSAGES ────────────────────────── */
+        .status-box {
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .status-box.sucesso {
+            background: rgba(34,197,94,0.1);
+            border: 1px solid rgba(34,197,94,0.3);
+            color: #4ade80;
+            display: flex;
+        }
+
+        .status-box.erro {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #f87171;
+            display: flex;
+        }
+
+        .status-box.loading {
+            background: rgba(165,180,252,0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--lavanda);
+            display: flex;
+        }
+
+        /* ─── BOTÃO PRINCIPAL ────────────────────────── */
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--lavanda), #818CF8);
+            border: none;
+            border-radius: 12px;
+            color: var(--azul-marinho);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(165,180,252,0.3);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Spinner inline */
+        .spinner-btn {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(13,15,50,0.3);
+            border-top-color: var(--azul-marinho);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <a href="../index.html" class="logo">⬡ Aethos</a>
+    <div class="header-user">
+        <span class="user-name" id="header-nome">Carregando...</span>
+        <button class="btn-sair" id="btn-sair" title="Sair do sistema">
+            <i class="fa fa-sign-out-alt"></i> Sair
+        </button>
+    </div>
+</header>
+
+<!-- MAIN -->
+<main class="main-container">
+    <h1 class="page-title"><i class="fa fa-map-marker-alt" style="color:var(--lavanda);margin-right:0.5rem;"></i>Cadastrar Novo Local</h1>
+    <p class="page-subtitle">Preencha os dados abaixo. Após o envio, um administrador irá revisar e aprovar seu espaço para aparecer no mapa.</p>
+
+    <form id="form-local" novalidate>
+
+        <!-- SEÇÃO 1: Informações Básicas -->
+        <div class="form-card">
+            <div class="section-title"><i class="fa fa-info-circle"></i> Informações Básicas</div>
+
+            <div class="form-group">
+                <label for="nome-local">Nome do Local / Academia / Dojo <span class="obrigatorio">*</span></label>
+                <input type="text" id="nome-local" name="nome" placeholder="Ex: Arena Sport Recreio" required>
+            </div>
+
+            <div class="row-group">
+                <div class="form-group">
+                    <label for="modalidade">Modalidade Esportiva <span class="obrigatorio">*</span></label>
+                    <select id="modalidade" name="modalidade" required>
+                        <option value="" disabled selected>Selecione...</option>
+                        <option value="Futebol">⚽ Futebol</option>
+                        <option value="Jiu-Jitsu">🥋 Jiu-Jitsu</option>
+                        <option value="Muay Thai">🥊 Muay Thai</option>
+                        <option value="Natação">🏊 Natação</option>
+                        <option value="Crossfit">💪 Crossfit</option>
+                        <option value="Yoga">🧘 Yoga</option>
+                        <option value="Tênis">🎾 Tênis</option>
+                        <option value="Basquete">🏀 Basquete</option>
+                        <option value="Vôlei">🏐 Vôlei</option>
+                        <option value="Outro">📍 Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone-contato">Telefone de Contato</label>
+                    <input type="tel" id="telefone-contato" name="telefone_contato" placeholder="(21) 99999-9999">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="descricao">Descrição do Espaço</label>
+                <textarea id="descricao" name="descricao" placeholder="Descreva o espaço, estrutura, diferenciais..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="horarios">Horários de Funcionamento</label>
+                <textarea id="horarios" name="horarios" style="min-height:70px;" placeholder="Ex: Seg-Sex: 07h às 22h | Sáb-Dom: 08h às 18h"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="instagram">Instagram (opcional)</label>
+                <input type="text" id="instagram" name="instagram" placeholder="@academia_exemplo">
+            </div>
+        </div>
+
+        <!-- SEÇÃO 2: Endereço com CEP -->
+        <div class="form-card">
+            <div class="section-title"><i class="fa fa-map-pin"></i> Localização</div>
+
+            <div class="cep-row">
+                <div class="form-group">
+                    <label for="cep">CEP <span class="obrigatorio">*</span></label>
+                    <input type="text" id="cep" name="cep" placeholder="00000-000" maxlength="9" required>
+                </div>
+                <div class="form-group">
+                    <label for="cidade">Cidade</label>
+                    <input type="text" id="cidade" name="cidade" placeholder="Preenchido pelo CEP" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="estado">Estado</label>
+                    <input type="text" id="estado" name="estado" placeholder="UF" maxlength="2" readonly>
+                </div>
+                <button type="button" class="btn-cep" id="btn-buscar-cep" title="Buscar CEP">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label for="endereco">Endereço Completo <span class="obrigatorio">*</span></label>
+                <input type="text" id="endereco" name="endereco" placeholder="Rua, número, complemento, bairro" required>
+            </div>
+
+            <p id="geo-status" style="font-size:0.8rem; color:rgba(165,180,252,0.7); margin-top:0.5rem;">
+                <i class="fa fa-circle-notch fa-spin"></i> As coordenadas do local serão obtidas automaticamente ao enviar.
+            </p>
+            <input type="hidden" id="latitude"  name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+        </div>
+
+        <!-- SEÇÃO 3: Foto de Capa -->
+        <div class="form-card">
+            <div class="section-title"><i class="fa fa-image"></i> Foto de Capa</div>
+
+            <div class="upload-area" id="upload-area">
+                <input type="file" id="foto-capa-input" accept="image/jpeg,image/png,image/webp">
+                <div class="upload-icon"><i class="fa fa-cloud-upload-alt"></i></div>
+                <div class="upload-text">
+                    <strong>Clique para selecionar</strong> ou arraste uma imagem aqui<br>
+                    <small>JPEG, PNG ou WebP — máx. 2MB</small>
+                </div>
+                <img id="preview-capa" src="" alt="Prévia da foto">
+            </div>
+            <input type="hidden" id="foto-capa-path" name="foto_capa">
+        </div>
+
+        <!-- STATUS -->
+        <div class="status-box loading" id="status-loading">
+            <i class="fa fa-circle-notch fa-spin"></i>
+            <span id="status-loading-text">Enviando...</span>
+        </div>
+        <div class="status-box sucesso" id="status-sucesso">
+            <i class="fa fa-check-circle"></i>
+            <span>Cadastro enviado com sucesso! Aguardando aprovação do Administrador para aparecer no mapa.</span>
+        </div>
+        <div class="status-box erro" id="status-erro">
+            <i class="fa fa-exclamation-triangle"></i>
+            <span id="status-erro-texto">Erro desconhecido.</span>
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-submit">
+            <span class="spinner-btn" id="spinner-btn"></span>
+            <i class="fa fa-paper-plane"></i> Enviar para Aprovação
+        </button>
+    </form>
+</main>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+$(document).ready(function() {
+
+    // ─── VERIFICAÇÃO DE SESSÃO ─────────────────────────────────
+    $.getJSON('../backend/verificar_sessao.php', function(res) {
+        if (!res.autenticado) {
+            window.location.href = '../login.html';
+            return;
+        }
+        if (res.tipo_usuario !== 'professor') {
+            alert('Apenas Professores podem cadastrar locais.');
+            window.location.href = '../index.html';
+            return;
+        }
+        $('#header-nome').text(res.nome);
+    }).fail(function() {
+        window.location.href = '../login.html';
+    });
+
+    // ─── LOGOUT ────────────────────────────────────────────────
+    $('#btn-sair').on('click', function() {
+        $.post('../backend/logout.php', function() {
+            window.location.href = '../login.html';
+        });
+    });
+
+    // ─── CEP: Máscara automática ──────────────────────────────
+    $('#cep').on('input', function() {
+        var v = $(this).val().replace(/\D/g, '');
+        if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);
+        $(this).val(v);
+    });
+
+    // ─── CEP: Busca ViaCEP ──────────────────────────────────
+    function buscarCep() {
+        var cep = $('#cep').val().replace(/\D/g, '');
+        if (cep.length !== 8) {
+            mostrarErro('CEP deve ter 8 dígitos.');
+            return;
+        }
+
+        $('#btn-buscar-cep').html('<i class="fa fa-circle-notch fa-spin"></i>').prop('disabled', true);
+
+        $.getJSON('https://viacep.com.br/ws/' + cep + '/json/', function(data) {
+            if (data.erro) {
+                mostrarErro('CEP não encontrado. Verifique o número informado.');
+                return;
+            }
+            $('#cidade').val(data.localidade || '');
+            $('#estado').val(data.uf || '');
+
+            // Preenche endereço se estiver vazio
+            var endAtual = $('#endereco').val().trim();
+            if (!endAtual) {
+                $('#endereco').val(data.logradouro + (data.bairro ? ', ' + data.bairro : ''));
+            }
+        }).fail(function() {
+            mostrarErro('Falha ao consultar o CEP. Verifique sua conexão.');
+        }).always(function() {
+            $('#btn-buscar-cep').html('<i class="fa fa-search"></i>').prop('disabled', false);
+        });
+    }
+
+    $('#btn-buscar-cep').on('click', buscarCep);
+    $('#cep').on('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); buscarCep(); }
+    });
+
+    // ─── UPLOAD: Prévia da foto ──────────────────────────────
+    $('#foto-capa-input').on('change', function() {
+        var file = this.files[0];
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+            mostrarErro('Imagem muito grande. Máximo: 2MB.');
+            this.value = '';
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('#preview-capa').attr('src', e.target.result).show();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Drag & Drop
+    var uploadArea = document.getElementById('upload-area');
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        $(this).addClass('drag-over');
+    });
+    uploadArea.addEventListener('dragleave', function() {
+        $(this).removeClass('drag-over');
+    });
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        $(this).removeClass('drag-over');
+        var files = e.dataTransfer.files;
+        if (files.length) {
+            document.getElementById('foto-capa-input').files = files;
+            $(document.getElementById('foto-capa-input')).trigger('change');
+        }
+    });
+
+    // ─── GEOCODIFICAÇÃO via Nominatim ─────────────────────────
+    function geocodificarEndereco(endereco, cidade, estado) {
+        var query = endereco + ', ' + cidade + ', ' + estado + ', Brasil';
+        return $.getJSON(
+            'https://nominatim.openstreetmap.org/search',
+            { q: query, format: 'json', limit: 1, addressdetails: 0 }
+        ).then(function(data) {
+            if (data.length > 0) {
+                return { lat: data[0].lat, lon: data[0].lon };
+            }
+            return null;
+        });
+    }
+
+    // ─── UPLOAD de foto antes do envio ───────────────────────
+    function uploadFoto() {
+        var fileInput = document.getElementById('foto-capa-input');
+        if (!fileInput.files.length) {
+            return $.Deferred().resolve(null).promise();
+        }
+
+        var formData = new FormData();
+        formData.append('foto', fileInput.files[0]);
+        formData.append('tipo', 'local');
+
+        return $.ajax({
+            url:         '../backend/upload.php',
+            method:      'POST',
+            data:        formData,
+            processData: false,
+            contentType: false
+        }).then(function(resp) {
+            if (resp.sucesso) return resp.caminho;
+            mostrarErro(resp.mensagem || 'Erro no upload da foto.');
+            return null;
+        });
+    }
+
+    // ─── ENVIO DO FORMULÁRIO ─────────────────────────────────
+    $('#form-local').on('submit', function(e) {
+        e.preventDefault();
+        esconderAlertas();
+
+        var nome      = $('#nome-local').val().trim();
+        var modal     = $('#modalidade').val();
+        var endereco  = $('#endereco').val().trim();
+        var cep       = $('#cep').val().trim();
+        var cidade    = $('#cidade').val().trim();
+        var estado    = $('#estado').val().trim();
+
+        // Validação básica
+        if (!nome) { mostrarErro('Nome do local é obrigatório.'); return; }
+        if (!modal) { mostrarErro('Selecione a modalidade esportiva.'); return; }
+        if (!endereco) { mostrarErro('Endereço é obrigatório.'); return; }
+
+        setBotaoLoading(true);
+        $('#status-loading-text').text('Obtendo coordenadas do endereço...');
+        $('#status-loading').show();
+
+        // Passo 1: Geocodificar
+        geocodificarEndereco(endereco, cidade, estado)
+        .then(function(coords) {
+            if (coords) {
+                $('#latitude').val(coords.lat);
+                $('#longitude').val(coords.lon);
+                $('#geo-status').html('<i class="fa fa-check-circle" style="color:#4ade80"></i> Coordenadas obtidas: ' +
+                    parseFloat(coords.lat).toFixed(5) + ', ' + parseFloat(coords.lon).toFixed(5));
+            } else {
+                $('#geo-status').html('<i class="fa fa-exclamation-circle" style="color:#fbbf24"></i> Coordenadas não encontradas — local não aparecerá no mapa automaticamente.');
+            }
+
+            // Passo 2: Upload da foto
+            $('#status-loading-text').text('Enviando foto de capa...');
+            return uploadFoto();
+        })
+        .then(function(fotoCaminho) {
+            if (fotoCaminho) $('#foto-capa-path').val(fotoCaminho);
+
+            // Passo 3: Enviar dados do local
+            $('#status-loading-text').text('Salvando local...');
+
+            var payload = {
+                nome:             nome,
+                modalidade:       modal,
+                descricao:        $('#descricao').val().trim(),
+                endereco:         endereco,
+                cep:              cep,
+                cidade:           cidade,
+                estado:           estado,
+                latitude:         $('#latitude').val(),
+                longitude:        $('#longitude').val(),
+                telefone_contato: $('#telefone-contato').val().trim(),
+                instagram:        $('#instagram').val().trim(),
+                horarios:         $('#horarios').val().trim(),
+                foto_capa:        $('#foto-capa-path').val()
+            };
+
+            return $.ajax({
+                url:         '../backend/locais.php?acao=criar',
+                method:      'POST',
+                contentType: 'application/json',
+                data:        JSON.stringify(payload)
+            });
+        })
+        .then(function(resp) {
+            if (resp && resp.sucesso) {
+                $('#status-loading').hide();
+                $('#status-sucesso').show();
+                $('#form-local')[0].reset();
+                $('#preview-capa').hide();
+                $('#latitude, #longitude, #foto-capa-path').val('');
+                $('#geo-status').html('<i class="fa fa-circle-notch fa-spin"></i> As coordenadas do local serão obtidas automaticamente ao enviar.');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                mostrarErro((resp && resp.mensagem) ? resp.mensagem : 'Erro ao enviar o cadastro.');
+            }
+        })
+        .fail(function() {
+            mostrarErro('Falha na comunicação com o servidor. Tente novamente.');
+        })
+        .always(function() {
+            setBotaoLoading(false);
+            $('#status-loading').hide();
+        });
+    });
+
+    // ─── HELPERS ─────────────────────────────────────────────
+    function mostrarErro(msg) {
+        $('#status-erro-texto').text(msg);
+        $('#status-erro').show();
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function esconderAlertas() {
+        $('#status-sucesso, #status-erro, #status-loading').hide();
+    }
+
+    function setBotaoLoading(loading) {
+        if (loading) {
+            $('#btn-submit').prop('disabled', true);
+            $('#spinner-btn').css('display', 'inline-block');
+        } else {
+            $('#btn-submit').prop('disabled', false);
+            $('#spinner-btn').hide();
+        }
+    }
+});
+</script>
+
+</body>
+</html>

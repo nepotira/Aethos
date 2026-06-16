@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aethos — Redefinição de senha via link seguro.">
+    <title>Redefinir Senha — Aethos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --azul: #0D0F32; --lavanda: #A5B4FC; --branco: #FFFFFF; --glass: rgba(13,15,50,0.7); --border: rgba(165,180,252,0.2); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--azul); color: var(--branco); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+        .card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px; }
+        .logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--lavanda); text-align: center; margin-bottom: 0.5rem; }
+        .titulo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 700; text-align: center; margin-bottom: 2rem; }
+        .campo label { display: block; font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 0.35rem; }
+        .campo { margin-bottom: 1.25rem; }
+        .campo input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; color: var(--branco); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        .campo input:focus { border-color: rgba(165,180,252,0.5); }
+        .btn-principal { width: 100%; padding: 0.9rem; background: linear-gradient(135deg, var(--lavanda), #818CF8); border: none; border-radius: 12px; color: var(--azul); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s; }
+        .btn-principal:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(165,180,252,0.3); }
+        .btn-principal:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .msg { border-radius: 10px; padding: 0.85rem 1rem; font-size: 0.875rem; margin-top: 1rem; display: none; }
+        .msg.ok  { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+        .msg.err { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  color: #f87171; }
+        #tela-invalido { text-align: center; padding: 1.5rem 0; }
+        #tela-invalido i { font-size: 3rem; color: #f87171; margin-bottom: 1rem; display: block; }
+        #tela-invalido p { color: rgba(255,255,255,0.6); margin-bottom: 1.5rem; font-size: 0.9rem; }
+        .link-voltar { display: block; text-align: center; margin-top: 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.875rem; text-decoration: none; }
+        .link-voltar:hover { color: var(--lavanda); }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">⬡ Aethos</div>
+
+    <!-- Tela: Token inválido/expirado -->
+    <div id="tela-invalido" style="display:none;">
+        <i class="fa fa-times-circle"></i>
+        <h2 class="titulo">Link Inválido ou Expirado</h2>
+        <p>Este link de redefinição não é mais válido. Solicite um novo link.</p>
+        <a href="esqueci-senha.html" class="btn-principal" style="display:inline-block; text-decoration:none; text-align:center; padding:0.85rem 2rem;">Solicitar Novo Link</a>
+    </div>
+
+    <!-- Tela: Formulário de nova senha -->
+    <div id="tela-form">
+        <h1 class="titulo">Criar Nova Senha</h1>
+        <form id="form-redefinir" novalidate>
+            <div class="campo">
+                <label for="nova-senha">Nova Senha</label>
+                <input type="password" id="nova-senha" placeholder="Mínimo 5 caracteres" required>
+            </div>
+            <div class="campo">
+                <label for="conf-senha">Confirmar Nova Senha</label>
+                <input type="password" id="conf-senha" placeholder="Repita a senha" required>
+            </div>
+            <button type="submit" class="btn-principal" id="btn-redefinir">
+                <i class="fa fa-check"></i> Redefinir Senha
+            </button>
+        </form>
+        <div class="msg ok" id="msg-ok"><i class="fa fa-check-circle"></i> Senha redefinida! Redirecionando para o login...</div>
+        <div class="msg err" id="msg-err"></div>
+    </div>
+
+    <a href="login.html" class="link-voltar"><i class="fa fa-arrow-left"></i> Voltar ao login</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+$(document).ready(function() {
+
+    // Lê token da URL
+    var params = new URLSearchParams(window.location.search);
+    var token  = params.get('token');
+
+    if (!token) {
+        $('#tela-form').hide();
+        $('#tela-invalido').show();
+        return;
+    }
+
+    // Verifica se o token é válido ao carregar a página
+    $.getJSON('backend/redefinir_senha.php?acao=verificar_token&token=' + encodeURIComponent(token), function(resp) {
+        if (!resp.sucesso) {
+            $('#tela-form').hide();
+            $('#tela-invalido').show();
+        }
+    }).fail(function() {
+        $('#tela-form').hide();
+        $('#tela-invalido').show();
+    });
+
+    // Envio da nova senha
+    $('#form-redefinir').on('submit', function(e) {
+        e.preventDefault();
+        $('#msg-ok, #msg-err').hide();
+
+        var nova  = $('#nova-senha').val();
+        var conf  = $('#conf-senha').val();
+
+        if (nova.length < 5) { $('#msg-err').text('A senha deve ter no mínimo 5 caracteres.').show(); return; }
+        if (nova !== conf)   { $('#msg-err').text('As senhas não coincidem.').show(); return; }
+
+        $('#btn-redefinir').prop('disabled', true).html('<i class="fa fa-circle-notch fa-spin"></i> Salvando...');
+
+        $.ajax({
+            url:         'backend/redefinir_senha.php?acao=confirmar',
+            method:      'POST',
+            contentType: 'application/json',
+            data:        JSON.stringify({ token: token, nova_senha: nova }),
+            success: function(resp) {
+                if (resp.sucesso) {
+                    $('#msg-ok').show();
+                    $('#form-redefinir').hide();
+                    setTimeout(function() { window.location.href = 'login.html'; }, 2500);
+                } else {
+                    $('#msg-err').text(resp.mensagem).show();
+                    $('#btn-redefinir').prop('disabled', false).html('<i class="fa fa-check"></i> Redefinir Senha');
+                }
+            },
+            error: function() {
+                $('#msg-err').text('Erro de comunicação. Tente novamente.').show();
+                $('#btn-redefinir').prop('disabled', false).html('<i class="fa fa-check"></i> Redefinir Senha');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

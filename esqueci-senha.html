@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aethos — Recuperação de senha por e-mail.">
+    <title>Esqueci Minha Senha — Aethos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --azul: #0D0F32; --lavanda: #A5B4FC; --branco: #FFFFFF; --glass: rgba(13,15,50,0.7); --border: rgba(165,180,252,0.2); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--azul); color: var(--branco); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background-image: radial-gradient(circle at 30% 20%, rgba(165,180,252,0.08) 0%, transparent 55%); }
+        .card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px; }
+        .logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--lavanda); text-align: center; margin-bottom: 0.5rem; }
+        .titulo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem; }
+        .subtitulo { color: rgba(255,255,255,0.5); font-size: 0.875rem; text-align: center; margin-bottom: 2rem; line-height: 1.5; }
+        .campo label { display: block; font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 0.35rem; }
+        .campo { margin-bottom: 1.25rem; }
+        .campo input { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; color: var(--branco); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        .campo input:focus { border-color: rgba(165,180,252,0.5); }
+        .btn-enviar { width: 100%; padding: 0.9rem; background: linear-gradient(135deg, var(--lavanda), #818CF8); border: none; border-radius: 12px; color: var(--azul); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s; }
+        .btn-enviar:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(165,180,252,0.3); }
+        .btn-enviar:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .msg { border-radius: 10px; padding: 0.85rem 1rem; font-size: 0.875rem; margin-top: 1rem; display: none; }
+        .msg.ok  { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+        .msg.err { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.3);  color: #f87171; }
+        .link-voltar { display: block; text-align: center; margin-top: 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.875rem; text-decoration: none; }
+        .link-voltar:hover { color: var(--lavanda); }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">⬡ Aethos</div>
+    <h1 class="titulo">Esqueci minha senha</h1>
+    <p class="subtitulo">Digite seu e-mail cadastrado e enviaremos um link para redefinição de senha.</p>
+
+    <form id="form-esqueci" novalidate>
+        <div class="campo">
+            <label for="email-recuperar">E-mail cadastrado</label>
+            <input type="email" id="email-recuperar" placeholder="seu@email.com" required autocomplete="email">
+        </div>
+        <button type="submit" class="btn-enviar" id="btn-enviar">
+            <i class="fa fa-paper-plane"></i> Enviar Instruções
+        </button>
+    </form>
+
+    <div class="msg ok"  id="msg-ok"><i class="fa fa-check-circle"></i> Se o e-mail estiver cadastrado, você receberá as instruções em breve.</div>
+    <div class="msg err" id="msg-err"></div>
+
+    <a href="login.html" class="link-voltar"><i class="fa fa-arrow-left"></i> Voltar ao login</a>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#form-esqueci').on('submit', function(e) {
+        e.preventDefault();
+        var email = $('#email-recuperar').val().trim();
+        if (!email) { $('#msg-err').text('Digite seu e-mail.').show(); return; }
+        $('#msg-ok, #msg-err').hide();
+        $('#btn-enviar').prop('disabled', true).html('<i class="fa fa-circle-notch fa-spin"></i> Enviando...');
+
+        $.ajax({
+            url:         'backend/redefinir_senha.php?acao=solicitar',
+            method:      'POST',
+            contentType: 'application/json',
+            data:        JSON.stringify({ email: email }),
+            success: function(resp) {
+                // Sempre mostrar mensagem genérica (não revelar se e-mail existe)
+                $('#msg-ok').show();
+                $('#form-esqueci')[0].reset();
+            },
+            error: function() {
+                $('#msg-err').text('Falha na comunicação. Tente novamente.').show();
+            },
+            complete: function() {
+                $('#btn-enviar').prop('disabled', false).html('<i class="fa fa-paper-plane"></i> Enviar Instruções');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>
