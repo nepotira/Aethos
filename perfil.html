@@ -277,7 +277,11 @@ $(document).ready(function() {
     }
 
     // ─── UPLOAD DE FOTO ───────────────────────────────────────
-    $('#foto-wrapper').on('click', function() { $('#input-foto').trigger('click'); });
+    $('#foto-wrapper').on('click', function(e) { 
+        if(e.target.id !== 'input-foto') {
+            $('#input-foto').trigger('click'); 
+        }
+    });
     $('#input-foto').on('change', function() {
         var file = this.files[0];
         if (!file) return;
