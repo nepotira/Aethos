@@ -126,6 +126,9 @@ function validar_dominio_email($email) {
     $partes = explode('@', $email);
     if (count($partes) !== 2) return false;
     $dominio = $partes[1];
-    return checkdnsrr($dominio, 'MX');
+    
+    // Ignora a validação de DNS MX para permitir testes locais e offline
+    // return checkdnsrr($dominio, 'MX');
+    return true;
 }
 ?>

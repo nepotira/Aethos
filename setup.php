@@ -40,7 +40,7 @@ if (!function_exists('password_verify')) {
 // ============================================================
 
 $host     = '127.0.0.1';
-$port     = '3307';
+$port     = '3306';
 $dbname   = 'aethos_db';
 $user     = 'root';
 $password = 'usbw';
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_setup'])) {
     ];
     try {
         $stmt = $pdo->prepare("
-            INSERT INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso)
+            INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso)
             VALUES ('desenvolvedor', :nome, :email, :senha, 1)
         ");
         foreach ($devs as $dev) {
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['run_setup'])) {
     // ── PASSO 6: Seed — Administrador ────────────────────────
     try {
         $pdo->prepare("
-            INSERT INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso)
+            INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso)
             VALUES ('admin', 'Admin Geral', 'admin@aethos.com', :senha, 1)
         ")->execute([':senha' => HASH_PADRAO]);
         $steps[] = ['ok', 'Administrador inserido: <strong>admin@aethos.com</strong> (senha padrão: <code>senha123</code>).'];

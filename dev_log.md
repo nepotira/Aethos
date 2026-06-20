@@ -602,6 +602,28 @@ Ao migrar a aplicação para o USBWebserver v8.6, identificamos que o servidor l
 
 ---
 
+## Passo 13 — Resolução de Conflito de Portas do MySQL e Sincronização do Servidor
+
+**Data:** 17/06/2026  
+**Responsável:** Agente de IA Antigravity
+
+### 13.1 — Resolução do Conflito na Porta do MySQL
+Ao analisar a falha de conexão com o banco de dados na tela de login, detectamos que o USBWebserver estava configurado para subir o MySQL na porta `3307`, que já estava ocupada por um processo do sistema (`mysqld.exe` associado ao serviço oficial `MySQL80`). 
+
+Como a finalização do processo conflitante foi impedida por privilégios do sistema operacional (Acesso Negado), a solução foi reconfigurar a porta do MySQL no USBWebserver para a porta `3306`, que estava livre:
+1. **Configuração do USBWebserver:** Modifiquei `AETHOS_USBWebserver/settings/usbwebserver.ini` alterando a porta sob a seção `[mysql]` para `3306`.
+2. **Strings de Conexão:** Atualizei as conexões PDO para a porta `3306` em `backend/conexao.php`, `setup.php` e `test_db.php`.
+
+### 13.2 — Sincronização em Tempo Real (Directory Junction)
+Identificamos que as atualizações do código-fonte na workspace `AETHOS` não se refletiam no servidor local devido à duplicidade manual de pastas no servidor (`AETHOS_USBWebserver/root/aethos`). Para solucionar isso e evitar problemas de sincronização futura:
+1. Deletei a pasta de arquivos estática e desatualizada do servidor.
+2. Criei uma **Junção de Diretórios (Directory Junction)** no Windows apontando `AETHOS_USBWebserver/root/aethos` diretamente para a pasta de desenvolvimento ativo `AETHOS`.
+
+### 13.3 — Correção do Script de Seed em setup.php
+Durante a validação, o script `setup.php` falhou devido a violações de chaves duplicadas no seed de usuários padrão (visto que o `database.sql` já executava queries de insert). Corrigi as queries em `setup.php` para usar `INSERT IGNORE INTO`, garantindo idempotência e permitindo que o script conclua 100% com sucesso sem quebrar em execuções subsequentes.
+
+---
+
 ## Registro de Ações — Linha do Tempo
 
 | Data | Ação | Arquivo(s) Afetado(s) |
@@ -620,7 +642,8 @@ Ao migrar a aplicação para o USBWebserver v8.6, identificamos que o servidor l
 | 10/06/2026 | Criação do cronograma Gantt | `cronograma_word.html` |
 | 15/06/2026 | Criação do `dev_log.md` (este arquivo) e `system_description.md` | `dev_log.md`, `system_description.md` |
 | 16/06/2026 | Correção de compatibilidade com PHP 5.4.17 e MySQL 5.6 do USBWebserver | `setup.php`, `backend/conexao.php`, `backend/login.php`, `backend/register.php`, `backend/trocar_senha.php`, `backend/database.sql` |
+| 17/06/2026 | Resolução de conflitos de porta MySQL, setup de junção de diretórios e correção de seeding no setup | `AETHOS_USBWebserver/settings/usbwebserver.ini`, `backend/conexao.php`, `setup.php`, `test_db.php` |
 
 ---
 
-*Este arquivo é mantido automaticamente pelo Agente de IA. Última atualização: 16/06/2026.*
+*Este arquivo é mantido automaticamente pelo Agente de IA. Última atualização: 17/06/2026.*

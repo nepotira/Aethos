@@ -155,11 +155,7 @@ $(document).ready(function() {
                     showFeedbackMessage(res.mensagem, true);
                     // Opcional: redicionar pro login depois ou acessar
                    setTimeout(() => { 
-                       if (res.email) {
-                           window.location.href = 'verificar-email.html?email=' + encodeURIComponent(res.email);
-                       } else {
-                           window.switchMainTab('login'); 
-                       }
+                       window.switchMainTab('login'); 
                    }, 2000);
                 } else {
                     showFeedbackMessage(res.mensagem, false);

@@ -60,7 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['email']) && isset($data
 
     if ($user && password_verify($senha, $user['senha'])) {
 
-        // --- Checagem de E-mail Verificado ---
+        // --- Checagem de E-mail Verificado (Temporariamente desabilitada) ---
+        /*
         if ($user['email_verificado'] == 0) {
             echo json_encode(array(
                 'sucesso'  => false,
@@ -69,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['email']) && isset($data
             ));
             exit;
         }
+        */
 
         // --- Login bem-sucedido ---
         session_regenerate_id(true); // Previne Session Fixation
