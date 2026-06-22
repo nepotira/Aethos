@@ -87,36 +87,36 @@ Após login bem-sucedido, cada perfil vai para uma página diferente:
 
 ### 3.1 Arquivos existentes com bugs conhecidos
 
-| Arquivo | Estado | Bugs a Corrigir |
+| Arquivo | Estado | Status Atual |
 |---|---|---|
-| `js/mapa.js` | ✅ Existe, com bugs | BUG-01: marcador de geolocalização; BUG-02: debounce 0ms; BUG-03: Enter não aciona busca |
-| `login.html` | ✅ Existe, incompleto | BUG-06: sem campo "Confirmar Senha"; BUG-04: botão Google sem handler |
-| `nova_senha.html` | ✅ Existe, incompleto | BUG-09: carrega sem checar sessão; BUG-10: sem redirecionamento ao receber "Acesso Negado" |
-| `backend/login.php` | ✅ Existe, com falhas críticas | BUG-07: `$senha == 'senha123'` hardcoded; BUG-08: sem `session_regenerate_id()` |
-| `backend/conexao.php` | ✅ Existe, com falha | BUG-11: expõe `$e->getMessage()` ao cliente |
-| `backend/register.php` | ✅ Existe, incompleto | BUG-05: sem validação de tamanho mínimo de senha; sem validação de CPF; sem validação de e-mail |
-| `backend/trocar_senha.php` | ✅ Existe, funcional | Nenhum bug crítico |
-| `backend/database.sql` | ✅ Existe, incompleto | Apenas tabela `usuarios`; faltam 3 tabelas |
-| `index.html` | ✅ Existe | Nenhum bug no HTML, apenas no JS |
-| `css/style.css` | ✅ Existe | Nenhum bug |
-| `js/auth.js` | ✅ Existe | Requer adição de validação de confirmação de senha |
+| `js/mapa.js` | ✅ Existe, funcional | Bugs 01, 02 e 03 corrigidos |
+| `login.html` | ✅ Existe, completo | Botão Google ativo via Identity Services; Validações completas |
+| `nova_senha.html` | ✅ Existe, completo | Sessão e redirecionamentos validados com animações |
+| `backend/login.php` | ✅ Existe, seguro | Senhas criptografadas; Session regenerate implementado |
+| `backend/conexao.php` | ✅ Existe, funcional | Conexão robusta (porta 3307); Tratamento de erros seguro |
+| `backend/register.php` | ✅ Existe, completo | Validações de tamanho, CPF e E-mail integradas |
+| `backend/trocar_senha.php` | ✅ Existe, funcional | Fluxo de recuperação funcional com PHPMailer |
+| `backend/database.sql` | ✅ Existe, completo | Todas as tabelas, foreign keys e logs estruturados |
+| `index.html` | ✅ Desativado | Redireciona para mapa.html (Splash Screen migrado) |
+| `css/style.css` | ✅ Existe | Padrão Liquid Glass consolidado |
+| `js/auth.js` | ✅ Existe | Integração completa com fluxos visuais |
 
 ### 3.2 Arquivos que NÃO existem e devem ser criados do zero
 
 **Páginas:**
 - `admin.html` — Painel Administrativo (completo)
 - `dev.html` — Painel do Desenvolvedor (completo)
-- `perfil.html` — Perfil do usuário logado
+- ✅ `perfil.html` — Perfil do usuário logado (Implementado)
 - `local.html` — Detalhe de um local esportivo (recebe `?id=X`)
 - `professor/cadastrar-local.html` — Formulário do Professor para submeter local
 
 **Backend:**
-- `backend/verificar_sessao.php` — Retorna sessão ativa (JSON)
-- `backend/logout.php` — Destroi sessão e redireciona
+- ✅ `backend/verificar_sessao.php` — Retorna sessão ativa (JSON) (Implementado)
+- ✅ `backend/logout.php` — Destroi sessão e redireciona (Implementado)
 - `backend/locais.php` — CRUD completo de locais esportivos
 - `backend/avaliacoes.php` — CRUD de avaliações
 - `backend/upload.php` — Upload de foto de perfil
-- `backend/redefinir_senha.php` — Envio de código por e-mail + redefinição
+- ✅ `backend/redefinir_senha.php` — Envio de código por e-mail + redefinição (Implementado)
 - `backend/admin/listar_pendentes.php` — Lista locais aguardando aprovação
 - `backend/admin/aprovar_local.php` — Aprova local de Professor
 - `backend/admin/rejeitar_local.php` — Rejeita local de Professor
