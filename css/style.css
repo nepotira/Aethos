@@ -1,6 +1,601 @@
+/* ============================================================
+   AETHOS — style.css
+   Sistema de Design Visual Baseado em Glassmorfismo (Liquid Glass)
+   Cores: 70% (#0D0F32) | 20% (#A5B4FC) | 10% (#FFFFFF)
+   Fontes: Plus Jakarta Sans & Inter
+   ============================================================ */
+
+/* Importar fontes do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
 html,
 body {
     height: 100%;
     margin: 0;
-    overflow: hidden; /* Não deixa a barra de rolagem aparecer na página */
+    overflow: hidden;
+    background-color: #0D0F32;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Títulos e cabeçalhos em Plus Jakarta Sans */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Remover setas do input number padrão do navegador */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield; /* Firefox */
+}
+
+/* Estilo global da barra de rolagem (Sleek Liquid Glass) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(165, 180, 252, 0.2);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(165, 180, 252, 0.4);
+}
+
+/* ============================================================
+   ESTRUTURAS RICAS (GLASSMORPHISM / LIQUID GLASS)
+   ============================================================ */
+
+.glass-panel {
+    background: rgba(13, 15, 50, 0.4);
+    border: 1px solid rgba(165, 180, 252, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.15); /* inner light reflection */
+    border-radius: 32px;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.1),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+    border-color: rgba(165, 180, 252, 0.3);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.15),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================
+   ANIMAÇÕES DE APARIÇÃO (APPLE BLUR REVEAL)
+   ============================================================ */
+@keyframes appleBlurReveal {
+    0% { opacity: 0; filter: blur(20px); transform: scale(0.98); }
+    100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+}
+
+.apple-blur-anim {
+    animation: appleBlurReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.apple-blur-anim-delayed {
+    opacity: 0;
+    animation: appleBlurReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+}
+
+/* ============================================================
+   BOTÕES E COMPONENTES DE INTERAÇÃO (MICRO-ANIMAÇÕES)
+   ============================================================ */
+
+.btn-aethos {
+    background: rgba(13, 15, 50, 0.8);
+    border: 1px solid rgba(165, 180, 252, 0.25);
+    color: #A5B4FC;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.88rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 50px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+}
+
+.btn-aethos:hover {
+    background: rgba(165, 180, 252, 0.15);
+    color: #ffffff;
+    border-color: rgba(165, 180, 252, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+.btn-aethos:active {
+    transform: translateY(0);
+}
+
+/* Botão de Destaque */
+.btn-aethos-primary {
+    background: linear-gradient(135deg, #6366F1, #818CF8);
+    color: #0D0F32 !important;
+    border: none;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+}
+
+.btn-aethos-primary:hover {
+    background: linear-gradient(135deg, #818CF8, #A5B4FC);
+    color: #0D0F32 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+/* ============================================================
+   CONTAINER DE BUSCA (BARRA SUPERIOR)
+   ============================================================ */
+
+.sidebar-mapa {
+    position: absolute;
+    top: 2rem;
+    left: 100px;
+    bottom: 2rem;
+    width: 400px;
+    max-width: 90%;
+    z-index: 1050;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Scrollbar invisível para a sidebar */
+.sidebar-mapa::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar-mapa::-webkit-scrollbar-thumb {
+    background: rgba(165, 180, 252, 0.2);
+    border-radius: 10px;
+}
+
+.search-input-group {
+    background: rgba(13, 15, 50, 0.45);
+    border: 1px solid rgba(165, 180, 252, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 28px;
+    padding: 0.75rem;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.search-input-group:focus-within {
+    border-color: rgba(165, 180, 252, 0.4);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.2);
+}
+
+.search-input-row {
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.15);
+    border-radius: 20px;
+    padding: 0.2rem 0.5rem;
+}
+
+.search-input {
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.6rem 0.8rem !important;
+    box-shadow: none !important;
+    outline: none !important;
+    width: 100%;
+}
+
+.search-input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.search-input::placeholder {
+    color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Remover fundo branco do autofill do navegador nas telas de login/cadastro */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px rgba(13, 15, 50, 0.95) inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #6366F1, #818CF8) !important;
+    border: none !important;
+    color: #0D0F32 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700 !important;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.6rem !important;
+    border-radius: 50px !important;
+    transition: all 0.25s ease !important;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3) !important;
+    cursor: pointer;
+    width: 100%;
+}
+
+.search-btn:hover {
+    background: linear-gradient(135deg, #818CF8, #A5B4FC) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45) !important;
+}
+
+/* ============================================================
+   CAIXA DE SUGESTÕES (AUTOCOMPLETE)
+   ============================================================ */
+
+#caixaSugestoes {
+    background: rgba(13, 15, 50, 0.6) !important;
+    border: 1px solid rgba(165, 180, 252, 0.2) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    overflow: hidden;
+    margin-top: 0.8rem;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.1);
+    z-index: 1060;
+}
+
+#caixaSugestoes button {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(165, 180, 252, 0.1) !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    padding: 0.8rem 1.2rem !important;
+    transition: all 0.2s ease;
+    width: 100%;
+    text-align: left;
+}
+
+#caixaSugestoes button:last-child {
+    border-bottom: none !important;
+}
+
+#caixaSugestoes button:hover {
+    background: rgba(165, 180, 252, 0.15) !important;
+    color: #A5B4FC !important;
+}
+
+/* ============================================================
+   CONTROLES DO LEAFLET CUSTOMIZADOS (ZOOM)
+   ============================================================ */
+
+.leaflet-control-zoom {
+    border: 1px solid rgba(165, 180, 252, 0.25) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+    background: rgba(13, 15, 50, 0.9) !important;
+    color: #A5B4FC !important;
+    border-bottom: 1px solid rgba(165, 180, 252, 0.15) !important;
+    transition: all 0.25s ease;
+    font-weight: 700;
+}
+
+.leaflet-control-zoom a:hover {
+    background: rgba(165, 180, 252, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* Attribution styling */
+.leaflet-container .leaflet-control-attribution {
+    background: rgba(13, 15, 50, 0.85) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    border-top-left-radius: 8px;
+    border-left: 1px solid rgba(165, 180, 252, 0.2);
+    border-top: 1px solid rgba(165, 180, 252, 0.2);
+    backdrop-filter: blur(8px);
+}
+
+.leaflet-container .leaflet-control-attribution a {
+    color: #A5B4FC !important;
+}
+
+/* ============================================================
+   POPUPS PERSONALIZADOS DO MAPA (GLOWING POPUPS)
+   ============================================================ */
+
+.popup-aethos .leaflet-popup-content-wrapper {
+    background: rgba(13, 15, 50, 0.5) !important;
+    border: 1px solid rgba(165, 180, 252, 0.25) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 28px !important;
+    color: #ffffff !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6), 
+                inset 0 1px 2px rgba(255,255,255,0.1) !important;
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+.popup-aethos .leaflet-popup-content {
+    margin: 0 !important;
+    width: 250px !important;
+}
+
+.popup-aethos .leaflet-popup-tip {
+    background: rgba(13, 15, 50, 0.95) !important;
+    border-left: 1px solid rgba(165, 180, 252, 0.25);
+    border-bottom: 1px solid rgba(165, 180, 252, 0.25);
+}
+
+.popup-local {
+    font-family: 'Inter', sans-serif;
+}
+
+.popup-foto {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid rgba(165, 180, 252, 0.15);
+}
+
+.popup-nome {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 0.98rem;
+    padding: 0.9rem 1rem 0.25rem;
+    margin: 0;
+    color: #ffffff;
+}
+
+.popup-modalidade {
+    display: block;
+    font-size: 0.76rem;
+    color: #A5B4FC;
+    padding: 0 1rem 0.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.popup-nota {
+    padding: 0 1rem 0.5rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.estrelas-popup {
+    color: #F59E0B; /* Ouro/Âmbar */
+    font-size: 0.85rem;
+}
+
+.nota-popup {
+    font-weight: 700;
+    color: #F59E0B;
+}
+
+.popup-professor {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+    padding: 0 1rem 0.75rem;
+    margin: 0;
+}
+
+.btn-popup {
+    display: block;
+    text-align: center;
+    margin: 0;
+    padding: 0.75rem;
+    background: rgba(165, 180, 252, 0.12);
+    color: #A5B4FC;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    border-top: 1px solid rgba(165, 180, 252, 0.2);
+}
+
+.btn-popup:hover {
+    background: linear-gradient(135deg, #6366F1, #818CF8);
+    color: #0D0F32;
+    text-decoration: none;
+}
+
+/* ============================================================
+   MODAL DE PERMISSÃO DE LOCALIZAÇÃO (GLOWING DIALOG)
+   ============================================================ */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 10, 36, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.modal-box {
+    background: rgba(13, 15, 50, 0.45);
+    border: 1px solid rgba(165, 180, 252, 0.25);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 40px;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    color: white;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    animation: modalReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalReveal {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* ============================================================
+   HEADER ACTIONS (BOTÕES FLUTUANTES NO TOPO DIREITO)
+   ============================================================ */
+.header-actions {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 1050;
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* Filtro CSS para transformar o OpenStreetMap padrão em Modo Escuro Preservando as Cores */
+.leaflet-tile {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    transition: filter 0.3s ease;
+}
+
+/* ============================================================
+   MENU LATERAL ESBELTO (SLIM SIDEBAR)
+   ============================================================ */
+.nav-lateral {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 72px;
+    background: rgba(13, 15, 50, 0.6);
+    border-right: 1px solid rgba(165, 180, 252, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 0;
+    z-index: 1100;
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: 1.5rem;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    padding: 4px;
+}
+
+.nav-item i {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+.nav-item span {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.58rem;
+    font-weight: 600;
+}
+
+.nav-item:hover, .nav-item.active {
+    background: rgba(165, 180, 252, 0.15);
+    color: #A5B4FC;
+    border-color: rgba(165, 180, 252, 0.3);
+    text-decoration: none;
+    border-radius: 50%;
+}
+
+.nav-bottom {
+    margin-top: auto;
+}
+
+/* ============================================================
+   BOTÃO DE VOLTAR / NAVEGAÇÃO (Flutuante)
+   ============================================================ */
+.btn-voltar {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(13, 15, 50, 0.6);
+    border: 1px solid rgba(165, 180, 252, 0.2);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #A5B4FC;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.25s ease;
+    z-index: 20;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-voltar:hover {
+    background: rgba(165, 180, 252, 0.15);
+    color: #ffffff;
+    border-color: rgba(165, 180, 252, 0.5);
+    transform: translateY(-2px);
+    text-decoration: none;
 }

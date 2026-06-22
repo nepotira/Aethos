@@ -40,7 +40,7 @@ A filosofia do sistema é **"sem fricção"**: qualquer pessoa com um navegador 
 | **Fonte Primária** | Plus Jakarta Sans (títulos e headings) |
 | **Fonte Secundária** | Inter (corpo do texto e UI) |
 | **Fonte de Display** | Syafixy (logotipo e elementos de marca) |
-| **Estilo Visual** | Glassmorfismo *Liquid Glass* — camadas translúcidas com blur |
+| **Estilo Visual** | Glassmorfismo *Liquid Glass 2.0* — Alta translucidez, desfoque profundo (blur > 30px), bordas extremamente arredondadas (24px+) e componentes flutuantes descolados das bordas da tela (margens ativas em todos os modais/layouts). Iluminação simulada com box-shadows duplas (inset white reflection + drop shadow preta profunda). |
 
 A regra 70-20-10 de distribuição de cores garante consistência visual: o azul escuro domina os fundos e estruturas, o lavanda aparece em elementos de ação e foco, e o branco reserva-se a textos de alta legibilidade.
 
@@ -54,13 +54,13 @@ A regra 70-20-10 de distribuição de cores garante consistência visual: o azul
 │                                                         │
 │  ┌─────────────┐  ┌─────────────┐  ┌────────────────┐  │
 │  │  index.html │  │ login.html  │  │ nova_senha.html│  │
-│  │  (Mapa)     │  │ (Auth UI)   │  │ (Troca Senha)  │  │
+│  │  (Splash)   │  │ (Auth UI)   │  │ (Troca Senha)  │  │
 │  └──────┬──────┘  └──────┬──────┘  └───────┬────────┘  │
 │         │                │                  │           │
 │  ┌──────▼──────┐  ┌──────▼──────┐           │           │
-│  │   mapa.js   │  │   auth.js   │           │           │
-│  │ (Leaflet +  │  │ (jQuery +   │           │           │
-│  │  Nominatim) │  │   AJAX)     │           │           │
+│  │  mapa.html  │  │   auth.js   │           │           │
+│  │ (Leaflet)   │  │ (jQuery +   │           │           │
+│  │  + mapa.js  │  │   AJAX)     │           │           │
 │  └─────────────┘  └──────┬──────┘           │           │
 │                          │  AJAX POST        │           │
 └──────────────────────────┼───────────────────┼───────────┘
@@ -181,15 +181,21 @@ O sistema possui **quatro perfis distintos**, cada um com permissões e fluxo de
 
 ## 5. Fluxos Principais do Sistema
 
-### 5.1 — Fluxo de Acesso ao Mapa (Usuário Não Autenticado)
-
+### 5.1 — Fluxo de Acesso Inicial
 ```
-1. Usuário acessa index.html
+1. Usuário acessa index.html (Tela Inicial / Splash Landing)
+2. Clica em "Fazer Login" -> vai para login.html
+3. Clica em "Explorar Mapa" -> vai para mapa.html
+```
+
+### 5.1.b — Fluxo de Acesso ao Mapa (mapa.html)
+```
+1. Usuário acessa mapa.html
 2. Navegador solicita permissão de geolocalização
 3. Se aprovada → mapa centraliza na localização do usuário
 4. Se negada → mapa exibe localização padrão (Brasília-DF)
-5. Usuário pode buscar locais via barra de busca (Nominatim API)
-6. Locais cadastrados e aprovados aparecem como marcadores no mapa
+5. Painel lateral esquerdo (Liquid Glass) exibe barra de pesquisa (esportes) e Raio (km)
+6. Ao pesquisar, sistema desenha raio semi-transparente no Leaflet e exibe resultados
 ```
 
 ### 5.2 — Fluxo de Login
@@ -236,11 +242,12 @@ O sistema possui **quatro perfis distintos**, cada um com permissões e fluxo de
 
 | Arquivo | Tipo | Descrição |
 |---|---|---|
-| [`index.html`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/index.html) | HTML | Página principal com mapa interativo Leaflet + barra de busca |
+| [`index.html`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/index.html) | HTML | Splash Screen / Landing Page interceptadora. Estética Liquid Glass. |
+| [`mapa.html`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/mapa.html) | HTML | Mapa interativo Leaflet com painel flutuante lateral de busca e raio. |
 | [`login.html`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/login.html) | HTML | Tela unificada de Login e Cadastro com seletor de perfil |
 | [`nova_senha.html`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/nova_senha.html) | HTML | Tela de troca de senha obrigatória (1º acesso Admin/Dev) |
-| [`css/style.css`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/css/style.css) | CSS | Estilos globais base da aplicação |
-| [`js/mapa.js`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/js/mapa.js) | JavaScript | Geolocalização, renderização do mapa e sistema de busca/autocomplete |
+| [`css/style.css`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/css/style.css) | CSS | Estilos globais (Liquid Glass 2.0 - alto blur, margens e bordas redondas) |
+| [`js/mapa.js`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/js/mapa.js) | JavaScript | Geolocalização, renderização Leaflet, painel lateral e círculo de raio |
 | [`js/auth.js`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/js/auth.js) | JavaScript | Controle de abas, seletor de perfil, toggle de senha e AJAX |
 | [`backend/conexao.php`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/backend/conexao.php) | PHP | Conexão PDO com MySQL — importado por todos os endpoints |
 | [`backend/login.php`](file:///e:/Desktop/NEPO/PROGRAMACAO/DSI/AETHOS/backend/login.php) | PHP | Endpoint de autenticação; inicia sessão PHP |

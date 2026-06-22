@@ -13,7 +13,11 @@
         :root { --azul: #0D0F32; --lavanda: #A5B4FC; --branco: #FFFFFF; --glass: rgba(13,15,50,0.7); --border: rgba(165,180,252,0.2); }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: var(--azul); color: var(--branco); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; background-image: radial-gradient(circle at 30% 20%, rgba(165,180,252,0.08) 0%, transparent 55%); }
-        .card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px; }
+        @keyframes appleBlurReveal {
+            0% { opacity: 0; filter: blur(20px); transform: scale(0.98); }
+            100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+        }
+        .card { background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px; animation: appleBlurReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--lavanda); text-align: center; margin-bottom: 0.5rem; }
         .titulo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.3rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem; }
         .subtitulo { color: rgba(255,255,255,0.5); font-size: 0.875rem; text-align: center; margin-bottom: 2rem; line-height: 1.5; }
@@ -32,6 +36,9 @@
     </style>
 </head>
 <body>
+<a href="login.html" style="position:fixed; top:1.5rem; left:1.5rem; width:44px; height:44px; border-radius:50%; background:rgba(13,15,50,0.6); border:1px solid rgba(165,180,252,0.2); backdrop-filter:blur(12px); display:flex; align-items:center; justify-content:center; color:#A5B4FC; text-decoration:none; font-size:1.1rem; transition:all 0.25s; z-index:20; box-shadow:0 4px 15px rgba(0,0,0,0.3);" title="Voltar">
+    <i class="fa fa-arrow-left"></i>
+</a>
 <div class="card">
     <div class="logo">⬡ Aethos</div>
     <h1 class="titulo">Esqueci minha senha</h1>

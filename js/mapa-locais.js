@@ -68,12 +68,36 @@
                           '<a href="local.html?id=' + local.id + '" class="btn-popup">Ver Detalhes</a>' +
                         '</div>';
 
-                    L.marker([lat, lon], { icon: iconeLavanda })
+                    // Armazenar os marcadores em array global para podermos filtrar depois
+                    if (!window.marcadoresAethos) window.marcadoresAethos = [];
+                    
+                    var marker = L.marker([lat, lon], { icon: iconeLavanda })
                         .bindPopup(popupConteudo, {
                             maxWidth: 260,
                             className: 'popup-aethos'
                         })
                         .addTo(window.mapaAethos || window.mapa);
+
+                    // Registrar clique no marcador como "local recente"
+                    (function(localData) {
+                        marker.on('click', function() {
+                            if (typeof window.registrarLocalRecente === 'function') {
+                                window.registrarLocalRecente({
+                                    id: localData.id,
+                                    nome: localData.nome,
+                                    modalidade: localData.modalidade
+                                });
+                            }
+                        });
+                    })(local);
+
+                    // Anexar meta-dados para o filtro local
+                    marker.aethosData = {
+                        nome: local.nome.toLowerCase(),
+                        modalidade: local.modalidade.toLowerCase()
+                    };
+                    
+                    window.marcadoresAethos.push(marker);
                 });
             },
             error: function() {

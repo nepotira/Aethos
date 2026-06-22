@@ -5,176 +5,508 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — Aethos</title>
     <meta name="description" content="Aethos — Acesse sua conta ou cadastre-se na plataforma de espaços esportivos.">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para ícones (olho de senha, google) -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- jQuery -->
-    <script src="js/jquery.min.js"></script>
+    
+    <!-- CSS Global Aethos -->
+    <link rel="stylesheet" href="css/style.css">
+    
     <style>
+        body {
+            background-color: var(--azul);
+            color: var(--branco);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 10% 20%, rgba(165, 180, 252, 0.05) 0%, transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(165, 180, 252, 0.05) 0%, transparent 40%);
+        }
+
+        /* Botão Voltar (Global style) */
+        .btn-voltar {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(13, 15, 50, 0.6);
+            border: 1px solid rgba(165, 180, 252, 0.2);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #A5B4FC;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.25s;
+            z-index: 20;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .btn-voltar:hover {
+            background: rgba(165, 180, 252, 0.15);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* Main card */
+        .card-auth {
+            background: rgba(13, 15, 50, 0.7);
+            border: 1px solid rgba(165, 180, 252, 0.2);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 32px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.1);
+            width: 100%;
+            max-width: 440px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+            animation: appleBlurReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes appleBlurReveal {
+            0% { opacity: 0; filter: blur(20px); transform: scale(0.98); }
+            100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+        }
+
+        /* Tab header */
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid rgba(165, 180, 252, 0.1);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 1.2rem;
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active {
+            color: var(--lavanda);
+            border-bottom: 2px solid var(--lavanda);
+            background: rgba(165, 180, 252, 0.03);
+        }
+
+        .card-body { padding: 2rem; }
         .hidden-tab { display: none; }
-        .active-tab-btn { border-bottom: 2px solid #3b82f6; color: #3b82f6; font-weight: 600; }
-        /* Suavizar transições do tailwind */
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Label and Text */
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 0.75rem;
+        }
+        .form-group { margin-bottom: 1.2rem; position: relative; }
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 0.4rem;
+        }
+
+        /* Dark Inputs (Design Rules) */
+        .input-aethos {
+            width: 100%;
+            background: rgba(8, 10, 34, 0.6);
+            border: 1px solid rgba(165, 180, 252, 0.2);
+            color: #fff;
+            padding: 0.85rem 1rem;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        .input-aethos:focus {
+            border-color: rgba(165, 180, 252, 0.6);
+            box-shadow: 0 0 0 4px rgba(165, 180, 252, 0.1);
+            background: rgba(13, 15, 50, 0.8);
+        }
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 2.3rem;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .toggle-password:hover { color: var(--lavanda); }
+
+        /* Profile Selector */
+        .profile-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .perfil-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(165, 180, 252, 0.15);
+            color: rgba(255,255,255,0.7);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .perfil-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .perfil-btn.active {
+            background: linear-gradient(135deg, var(--lavanda) 0%, #818CF8 100%);
+            color: var(--azul);
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(165, 180, 252, 0.3);
+        }
+        .login-only { display: inline-block; }
+
+        /* Botão Primário (100% Arredondado) */
+        .btn-primary-aethos {
+            width: 100%;
+            background: linear-gradient(135deg, var(--lavanda) 0%, #818CF8 100%);
+            color: var(--azul);
+            border: none;
+            padding: 0.9rem;
+            border-radius: 50px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(165, 180, 252, 0.2);
+        }
+        .btn-primary-aethos:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(165, 180, 252, 0.4);
+        }
+
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+        .options-row label {
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .options-row a {
+            color: var(--lavanda);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .options-row a:hover { text-decoration: underline; }
+
+        .divider-ou {
+            position: relative;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.8rem;
+        }
+        .divider-ou::before, .divider-ou::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: rgba(165, 180, 252, 0.15);
+        }
+        .divider-ou::before { left: 0; }
+        .divider-ou::after { right: 0; }
+
+        .row-2 {
+            display: flex;
+            gap: 1rem;
+        }
+        .row-2 > div { flex: 1; }
+
+        #campos-professor {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid #FCD34D;
+            padding: 1rem;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 1.2rem;
+            display: none;
+        }
+        #campos-professor .section-title { color: #FCD34D; }
+
+        #mensagem-alerta {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+            display: none;
+        }
+        #mensagem-alerta.erro { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+        #mensagem-alerta.sucesso { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div class="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden flex flex-col">
+    <!-- Botão de Voltar ao Início -->
+    <a href="index.html" class="btn-voltar" title="Voltar ao início">
+        <i class="fa fa-arrow-left"></i>
+    </a>
+
+    <!-- Card Principal -->
+    <div class="card-auth">
         
-        <!-- HEADER ABAS PRINCIPAIS (Login / Cadastro) -->
-        <div class="flex border-b text-center text-gray-500">
-            <button id="btn-tab-login" class="w-1/2 py-4 active-tab-btn uppercase text-sm" onclick="switchMainTab('login')">Entrar</button>
-            <button id="btn-tab-register" class="w-1/2 py-4 uppercase text-sm hover:text-blue-500 transition" onclick="switchMainTab('register')">Cadastrar</button>
+        <!-- Abas -->
+        <div class="tab-header">
+            <button id="btn-tab-login" class="tab-btn active" onclick="switchMainTab('login')">Entrar</button>
+            <button id="btn-tab-register" class="tab-btn" onclick="switchMainTab('register')">Cadastrar</button>
         </div>
 
-        <div class="p-6 fade-in">
+        <div class="card-body">
             
-            <!-- ====== SESSÃO DE ESCOLHA DE PERFIL (Comum para os dois) ====== -->
-            <div class="mb-6">
-                <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Quem é você?</label>
-                <div class="flex flex-wrap gap-2" id="profile-selector">
-                    <!-- Botões de Perfil -->
-                    <button class="perfil-btn active bg-blue-500 text-white px-3 py-1.5 rounded text-sm shadow-sm transition" data-type="comum">Atleta / Usuário</button>
-                    <button class="perfil-btn bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-1.5 rounded text-sm transition" data-type="professor">Professor / Local</button>
-                    
-                    <!-- Admins e Devs só aparecem no Login -->
-                    <button class="perfil-btn login-only bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-1.5 rounded text-sm transition" data-type="admin">Admin</button>
-                    <button class="perfil-btn login-only bg-gray-100 text-gray-600 hover:bg-gray-200 px-3 py-1.5 rounded text-sm transition" data-type="desenvolvedor">Desenvolvedor</button>
-                </div>
+            <!-- ====== SESSÃO DE ESCOLHA DE PERFIL ====== -->
+            <div class="section-title">Quem é você?</div>
+            <div class="profile-selector" id="profile-selector">
+                <button class="perfil-btn active" data-type="comum">Atleta / Usuário</button>
+                <button class="perfil-btn" data-type="professor">Professor / Local</button>
+                <button class="perfil-btn login-only" data-type="admin">Admin</button>
+                <button class="perfil-btn login-only" data-type="desenvolvedor">Desenvolvedor</button>
             </div>
 
             <!-- ====== FORMULÁRIO DE LOGIN ====== -->
-            <form id="form-login" class="space-y-4">
+            <form id="form-login">
                 <input type="hidden" name="tipo_usuario" value="comum">
                 
-                <div id="login-identifier-wrapper">
-                    <label class="block text-sm font-medium text-gray-700 mb-1" id="label-login-email">E-mail</label>
-                    <input type="email" id="login-email" name="email" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="seu@email.com" required>
+                <div class="form-group" id="login-identifier-wrapper">
+                    <label id="label-login-email">E-mail</label>
+                    <input type="email" id="login-email" name="email" class="input-aethos" placeholder="seu@email.com" required>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                    <div class="relative">
-                        <input type="password" id="login-senha" name="senha" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Sua senha" required>
-                        <i class="fa fa-eye-slash absolute right-3 top-3 text-gray-400 cursor-pointer toggle-password" data-target="login-senha"></i>
-                    </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="login-senha" name="senha" class="input-aethos" placeholder="Sua senha" required>
+                    <i class="fa fa-eye-slash toggle-password" data-target="login-senha"></i>
                 </div>
 
-                <div class="flex justify-between items-center text-sm">
-                    <label class="flex items-center text-gray-600 cursor-pointer">
-                        <input type="checkbox" class="mr-2 rounded text-blue-500"> Lembrar-me
+                <div class="options-row">
+                    <label>
+                        <input type="checkbox" id="chk-lembrar-me"> Lembrar-me
                     </label>
-                    <a href="esqueci-senha.html" class="text-blue-500 hover:underline">Esqueceu a senha?</a>
+                    <a href="esqueci-senha.html">Esqueceu a senha?</a>
                 </div>
 
-                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-lg shadow-md hover:bg-blue-700 transition">
-                    Entrar
-                </button>
+                <button type="submit" class="btn-primary-aethos">Entrar</button>
 
                 <!-- Área de botões sociais (Aparece só p/ usuários normais) -->
-                <div class="social-login-wrapper mt-4">
-                    <div class="relative flex items-center justify-center my-4">
-                        <div class="border-t border-gray-300 w-full"></div>
-                        <span class="bg-white px-3 text-xs text-gray-500 absolute">OU</span>
+                <div class="social-login-wrapper">
+                    <div class="divider-ou">
+                        <span>OU</span>
                     </div>
-                    <!-- PATCH BUG-04: Botão Google desabilitado até implementação de OAuth (RF15) -->
-                    <button
-                        type="button"
-                        disabled
-                        title="Login com Google — Em breve!"
-                        class="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-lg py-2 px-4 text-gray-400 bg-gray-50 cursor-not-allowed opacity-60 select-none"
-                    >
-                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 opacity-50" alt="Google">
-                        Entrar com Google <span class="text-xs">(em breve)</span>
-                    </button>
+
+                    <!-- Div onde o botão oficial do Google será renderizado -->
+                    <div id="buttonDiv" style="display:flex; justify-content:center;"></div>
                 </div>
             </form>
-
 
             <!-- ====== FORMULÁRIO DE CADASTRO ====== -->
-            <form id="form-register" class="space-y-4 hidden-tab">
+            <form id="form-register" class="hidden-tab">
                 <input type="hidden" name="tipo_usuario" value="comum">
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
-                    <!-- PATCH BUG-17: placeholder adicionado -->
-                    <input type="text" name="nome" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Seu nome completo" required>
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" name="nome" class="input-aethos" placeholder="Seu nome completo" required>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Apelido (Opcional)</label>
-                    <input type="text" name="apelido" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                <div class="form-group">
+                    <label>Apelido (Opcional)</label>
+                    <input type="text" name="apelido" class="input-aethos" placeholder="Ex: Leo">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                    <input type="email" name="email" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" name="email" class="input-aethos" placeholder="seu@email.com" required>
                 </div>
 
-                <div class="flex gap-2">
-                    <div class="w-1/4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">DDD</label>
-                        <input type="text" name="ddd" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="11" maxlength="2" required>
+                <div class="row-2">
+                    <div class="form-group" style="flex: 0.3;">
+                        <label>DDD</label>
+                        <input type="text" name="ddd" class="input-aethos" placeholder="11" maxlength="2" required>
                     </div>
-                    <div class="w-3/4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                        <input type="text" name="telefone" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="90000-0000" required>
+                    <div class="form-group" style="flex: 0.7;">
+                        <label>Telefone</label>
+                        <input type="text" name="telefone" class="input-aethos" placeholder="90000-0000" required>
                     </div>
                 </div>
 
-                <!-- CARGA ESPECÍFICA DO PROFESSOR (Escondida por padrão) -->
-                <div id="campos-professor" class="hidden space-y-4 border-l-4 border-yellow-400 pl-3 bg-yellow-50 py-2 rounded-r-lg">
-                    <label class="block text-xs font-semibold text-yellow-700 uppercase">Informações do Local/Professor</label>
+                <!-- CARGA ESPECÍFICA DO PROFESSOR -->
+                <div id="campos-professor">
+                    <div class="section-title">Informações do Local/Professor</div>
                     
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">CPF</label>
-                        <input type="text" name="cpf" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-500 outline-none" placeholder="000.000.000-00">
+                    <div class="form-group">
+                        <label>CPF</label>
+                        <input type="text" name="cpf" class="input-aethos" placeholder="000.000.000-00">
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Endereço Fixo</label>
-                        <input type="text" name="endereco" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-yellow-500 outline-none" placeholder="Rua do Dojo, 123">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Criar Senha</label>
-                    <div class="relative">
-                        <input type="password" id="reg-senha" name="senha" class="w-full border-gray-300 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required>
-                        <i class="fa fa-eye-slash absolute right-3 top-3 text-gray-400 cursor-pointer toggle-password" data-target="reg-senha"></i>
+                    <div class="form-group">
+                        <label>Endereço Fixo</label>
+                        <input type="text" name="endereco" class="input-aethos" placeholder="Rua do Dojo, 123">
                     </div>
                 </div>
 
-                <!-- PATCH BUG-06: Campo de confirmação de senha -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha</label>
-                    <div class="relative">
-                        <input
-                            type="password"
-                            id="reg-senha-confirm"
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
-                            placeholder="Repita sua senha"
-                            required
-                        >
-                        <i class="fa fa-eye-slash absolute right-3 top-3 text-gray-400 cursor-pointer toggle-password"
-                           data-target="reg-senha-confirm"></i>
-                    </div>
+                <div class="form-group">
+                    <label>Criar Senha</label>
+                    <input type="password" id="reg-senha" name="senha" class="input-aethos" required>
+                    <i class="fa fa-eye-slash toggle-password" data-target="reg-senha"></i>
                 </div>
 
-                <!-- Botão centralizado de Cadastro -->
-                <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-lg shadow-md hover:bg-blue-700 transition mt-2">
-                    Criar conta
-                </button>
+                <div class="form-group">
+                    <label>Confirmar Senha</label>
+                    <input type="password" id="reg-senha-confirm" class="input-aethos" placeholder="Repita sua senha" required>
+                    <i class="fa fa-eye-slash toggle-password" data-target="reg-senha-confirm"></i>
+                </div>
+
+                <button type="submit" class="btn-primary-aethos">Criar conta</button>
             </form>
 
-            <div id="mensagem-alerta" class="mt-4 text-center text-sm hidden p-2 rounded"></div>
+            <div id="mensagem-alerta"></div>
 
         </div>
     </div>
 
-    <!-- Script de Lógica Principal -->
+    <!-- Scripts do Google e Bibliotecas -->
+    <script src="js/jquery.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    
+    <script>
+        // Lógica visual da Tela de Login (Tabs, Mostrar/Ocultar perfis)
+        function switchMainTab(tab) {
+            $('.tab-btn').removeClass('active');
+            $('#form-login, #form-register').hide();
+            
+            if (tab === 'login') {
+                $('#btn-tab-login').addClass('active');
+                $('#form-login').fadeIn();
+                $('.login-only').show(); // Mostra Admin/Dev
+            } else {
+                $('#btn-tab-register').addClass('active');
+                $('#form-register').fadeIn();
+                $('.login-only').hide(); // Esconde Admin/Dev
+                
+                // Se o usuário selecionou admin/dev antes de ir para cadastro, reseta para comum
+                let currentProfile = $('#form-register input[name="tipo_usuario"]').val();
+                if (currentProfile === 'admin' || currentProfile === 'desenvolvedor') {
+                    $('.perfil-btn[data-type="comum"]').click();
+                }
+            }
+        }
+
+        $('.perfil-btn').on('click', function() {
+            $('.perfil-btn').removeClass('active');
+            $(this).addClass('active');
+            
+            const type = $(this).data('type');
+            $('input[name="tipo_usuario"]').val(type);
+
+            if (type === 'professor') {
+                $('#campos-professor').slideDown();
+                $('#campos-professor input').prop('required', true);
+            } else {
+                $('#campos-professor').slideUp();
+                $('#campos-professor input').prop('required', false);
+            }
+
+            if (type === 'admin' || type === 'desenvolvedor') {
+                $('.social-login-wrapper').slideUp();
+                $('#label-login-email').text('Identificador (ID / E-mail)');
+            } else {
+                $('.social-login-wrapper').slideDown();
+                $('#label-login-email').text('E-mail');
+            }
+        });
+
+        // Mostrar / Esconder Senha
+        $('.toggle-password').on('click', function() {
+            const targetId = $(this).data('target');
+            const input = $('#' + targetId);
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                $(this).removeClass('fa-eye-slash').addClass('fa-eye');
+            } else {
+                input.attr('type', 'password');
+                $(this).removeClass('fa-eye').addClass('fa-eye-slash');
+            }
+        });
+
+        // Google Sign-In via Identity Services Callback
+        function handleCredentialResponse(response) {
+            console.log("JWT Google recebido");
+            $('#mensagem-alerta').hide().removeClass('sucesso erro');
+
+            $.ajax({
+                url: 'backend/login_google.php',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ credential: response.credential }),
+                success: function(res) {
+                    if (res.sucesso) {
+                        $('#mensagem-alerta').addClass('sucesso').text(res.mensagem).fadeIn();
+                        setTimeout(() => window.location.href = res.url_redirecionamento, 800);
+                    } else {
+                        $('#mensagem-alerta').addClass('erro').text(res.mensagem).fadeIn();
+                    }
+                },
+                error: function() {
+                    $('#mensagem-alerta').addClass('erro').text('Erro ao comunicar com o servidor.').fadeIn();
+                }
+            });
+        }
+
+        window.onload = function () {
+            if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                // ATENÇÃO: Para o login do Google funcionar e parar de dar "Error 401: invalid_client",
+                // você PRECISA trocar o "client_id" abaixo pelo ID real gerado no seu Google Cloud Console.
+                google.accounts.id.initialize({
+                    client_id: "117030674575-rv43ooa50ab1ijjnlm4sodudojcckl41.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+                
+                // Renderiza o botão oficial do Google com formato de pílula (100% redondo) e fundo claro
+                google.accounts.id.renderButton(
+                    document.getElementById("buttonDiv"),
+                    { theme: "outline", size: "large", shape: "pill", text: "continue_with", width: 350 }
+                );
+            }
+        };
+    </script>
+
+    <!-- Script de Lógica Principal (AJAX e Memória local) -->
     <script src="js/auth.js"></script>
 </body>
 </html>

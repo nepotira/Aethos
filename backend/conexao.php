@@ -33,30 +33,47 @@ if (!function_exists('password_verify')) {
     }
 }
 
-// Configurações do Banco de Dados
-$host = '127.0.0.1';
-$port = '3306';
+// Configurações do Banco de Dados - Testando as possibilidades (XAMPP e USBWebserver)
+$possibilidades = [
+    // 1. Tentar padrão XAMPP
+    ['host' => '127.0.0.1', 'port' => '3306', 'user' => 'root', 'password' => ''],
+    // 2. Tentar padrão USBWebserver (caso o usuário use este)
+    ['host' => '127.0.0.1', 'port' => '3307', 'user' => 'root', 'password' => 'usbw'],
+    // 3. Tentar porta MariaDB alternativa XAMPP
+    ['host' => '127.0.0.1', 'port' => '3308', 'user' => 'root', 'password' => '']
+];
+
 $dbname = 'aethos_db';
-$user = 'root'; 
-$password = 'usbw'; 
+$pdo = null;
+$last_error = '';
 
-try {
-    // Definindo a conexão usando PDO
-    $pdo = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", $user, $password);
-    
-    // Mostrando os erros caso haja problema (Útil no ambiente de desenvolvimento)
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+foreach ($possibilidades as $cfg) {
+    try {
+        $dsn = "mysql:host={$cfg['host']};port={$cfg['port']};dbname={$dbname};charset=utf8mb4";
+        $pdo = new PDO($dsn, $cfg['user'], $cfg['password']);
+        
+        // Mostrando os erros caso haja problema
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        
+        // Conexão bem sucedida, sai do loop
+        break;
+    } catch (PDOException $e) {
+        $last_error = $e->getMessage();
+        $pdo = null;
+        // Continua tentando o próximo
+    }
+}
 
-} catch (PDOException $e) {
-    // Registra o erro técnico apenas nos logs do servidor (não expõe ao cliente)
-    error_log('[Aethos] Erro crítico de conexão PDO: ' . $e->getMessage());
+if (!$pdo) {
+    // Registra o erro técnico apenas nos logs do servidor
+    error_log('[Aethos] Erro crítico de conexão PDO (todas as portas falharam): ' . $last_error);
 
-    // Caso dê ruim na conexão, devolve erro genérico em JSON (sem expor detalhes internos)
+    // Caso dê ruim na conexão, devolve erro genérico em JSON
     header('Content-Type: application/json');
     echo json_encode([
         'sucesso' => false,
-        'mensagem' => 'Erro crítico: Falha ao conectar com o banco de dados. Verifique o XAMPP e o script de banco.'
+        'mensagem' => 'Erro crítico: Falha ao conectar com o banco de dados. Verifique se o XAMPP está ligado (MySQL/MariaDB).'
     ]);
     exit;
 }

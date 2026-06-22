@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
 
     <style>
         :root { --azul: #0D0F32; --lavanda: #A5B4FC; --branco: #FFFFFF; --glass: rgba(13,15,50,0.65); --border: rgba(165,180,252,0.2); }
@@ -108,7 +109,7 @@
 <main class="container-perfil">
 
     <!-- CARD PRINCIPAL -->
-    <div class="perfil-card" id="perfil-card">
+    <div class="perfil-card apple-blur-anim" id="perfil-card">
         <div class="foto-wrapper" id="foto-wrapper" title="Alterar foto de perfil">
             <div class="foto-perfil" id="foto-display"><i class="fa fa-user"></i></div>
             <div class="foto-overlay"><i class="fa fa-camera"></i></div>
@@ -126,7 +127,7 @@
     </div>
 
     <!-- DADOS DO PERFIL -->
-    <div class="section-card">
+    <div class="section-card apple-blur-anim-delayed">
         <div class="section-title"><i class="fa fa-id-card"></i> Dados Cadastrais</div>
         <div class="dado-row">
             <div class="dado-item"><div class="dado-label">Apelido</div><div class="dado-valor" id="d-apelido">—</div></div>
@@ -137,7 +138,7 @@
     </div>
 
     <!-- SEÇÃO PROFESSOR: Meus Locais -->
-    <div class="section-card" id="section-professor" style="display:none;">
+    <div class="section-card apple-blur-anim-delayed" id="section-professor" style="display:none;">
         <div class="section-title"><i class="fa fa-map-marker-alt"></i> Meus Locais Esportivos</div>
         <div id="lista-locais-professor"></div>
         <a href="professor/cadastrar-local.html" class="btn-add-local">
@@ -146,7 +147,7 @@
     </div>
 
     <!-- SEÇÃO ATLETA: Minhas Avaliações -->
-    <div class="section-card" id="section-atleta" style="display:none;">
+    <div class="section-card apple-blur-anim-delayed" id="section-atleta" style="display:none;">
         <div class="section-title"><i class="fa fa-star"></i> Minhas Avaliações</div>
         <div id="lista-avaliacoes-atleta"></div>
     </div>
@@ -158,13 +159,13 @@
     <div class="modal-box">
         <button class="modal-fechar" data-modal="modal-editar">✕</button>
         <div class="modal-titulo"><i class="fa fa-pencil-alt" style="color:var(--lavanda); margin-right:0.5rem;"></i>Editar Perfil</div>
-        <div class="form-campo"><label>Nome Completo</label><input type="text" id="edit-nome" placeholder="Seu nome"></div>
-        <div class="form-campo"><label>Apelido</label><input type="text" id="edit-apelido" placeholder="Apelido (opcional)"></div>
+        <div class="form-campo"><label>Nome Completo</label><input type="text" class="input-aethos" id="edit-nome" placeholder="Seu nome"></div>
+        <div class="form-campo"><label>Apelido</label><input type="text" class="input-aethos" id="edit-apelido" placeholder="Apelido (opcional)"></div>
         <div style="display:grid; grid-template-columns:80px 1fr; gap:0.75rem;">
-            <div class="form-campo"><label>DDD</label><input type="text" id="edit-ddd" placeholder="21" maxlength="3"></div>
-            <div class="form-campo"><label>Telefone</label><input type="text" id="edit-tel" placeholder="99999-9999"></div>
+            <div class="form-campo"><label>DDD</label><input type="text" class="input-aethos" id="edit-ddd" placeholder="21" maxlength="3"></div>
+            <div class="form-campo"><label>Telefone</label><input type="text" class="input-aethos" id="edit-tel" placeholder="99999-9999"></div>
         </div>
-        <button class="btn-modal-salvar" id="btn-salvar-editar">Salvar Alterações</button>
+        <button class="btn-primary-aethos" id="btn-salvar-editar" style="margin-top: 1rem;">Salvar Alterações</button>
         <div class="status-msg ok"  id="edit-ok"><i class="fa fa-check"></i> Perfil atualizado!</div>
         <div class="status-msg err" id="edit-err"></div>
     </div>
@@ -175,10 +176,10 @@
     <div class="modal-box">
         <button class="modal-fechar" data-modal="modal-senha">✕</button>
         <div class="modal-titulo"><i class="fa fa-lock" style="color:var(--lavanda); margin-right:0.5rem;"></i>Alterar Senha</div>
-        <div class="form-campo"><label>Senha Atual</label><input type="password" id="senha-atual" placeholder="••••••••"></div>
-        <div class="form-campo"><label>Nova Senha</label><input type="password" id="nova-senha" placeholder="Mínimo 5 caracteres"></div>
-        <div class="form-campo"><label>Confirmar Nova Senha</label><input type="password" id="conf-senha" placeholder="Repita a nova senha"></div>
-        <button class="btn-modal-salvar" id="btn-salvar-senha">Alterar Senha</button>
+        <div class="form-campo"><label>Senha Atual</label><input type="password" class="input-aethos" id="senha-atual" placeholder="••••••••"></div>
+        <div class="form-campo"><label>Nova Senha</label><input type="password" class="input-aethos" id="nova-senha" placeholder="Mínimo 5 caracteres"></div>
+        <div class="form-campo"><label>Confirmar Nova Senha</label><input type="password" class="input-aethos" id="conf-senha" placeholder="Repita a nova senha"></div>
+        <button class="btn-primary-aethos" id="btn-salvar-senha" style="margin-top: 1rem;">Alterar Senha</button>
         <div class="status-msg ok"  id="senha-ok"><i class="fa fa-check"></i> Senha alterada com sucesso!</div>
         <div class="status-msg err" id="senha-err"></div>
     </div>

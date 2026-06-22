@@ -132,3 +132,17 @@ INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, 
 -- SEED: Administrador Master
 INSERT IGNORE INTO usuarios (tipo_usuario, nome, email, senha, primeiro_acesso, ativo, email_verificado) VALUES
 ('admin', 'Admin Geral', 'admin@aethos.com', '$2y$10$06S4p.2rQ6t6Q7J9K1xL$.D24wPon9yYJDJ64CI7rLeAYYSxEvSjG', 1, 1, 1);
+
+-- ============================================================
+-- TABELA 6: locais_salvos (Favoritos do usuário)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS locais_salvos (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    local_id   INT NOT NULL,
+    criado_em  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (local_id)   REFERENCES locais_esportivos(id) ON DELETE CASCADE,
+    UNIQUE KEY salvamento_unico (usuario_id, local_id),
+    INDEX idx_usuario (usuario_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

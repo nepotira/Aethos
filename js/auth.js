@@ -12,15 +12,31 @@ $(document).ready(function() {
         window.switchMainTab('register');
     }
 
+    // ==========================================
+    // SISTEMA LEMBRAR-ME (localStorage)
+    // ==========================================
+    
+    // Ao carregar a página, verificar se há dados salvos do "Lembrar-me"
+    const savedEmail = localStorage.getItem('aethos_lembrar_email');
+    const savedTipo  = localStorage.getItem('aethos_lembrar_tipo');
+    if (savedEmail) {
+        $('#login-email').val(savedEmail);
+        $('#chk-lembrar-me').prop('checked', true);
+        if (savedTipo) {
+            // Clica no botão de perfil correspondente
+            $(`.perfil-btn[data-type="${savedTipo}"]`).click();
+        }
+    }
+
     // Função de alterar entre tela Entrar e Cadastrar
     window.switchMainTab = function(tab) {
         if(tab === 'login') {
             isLoginTab = true;
-            $('#btn-tab-login').addClass('active-tab-btn text-gray-700').removeClass('hover:text-blue-500');
-            $('#btn-tab-register').removeClass('active-tab-btn text-gray-700').addClass('hover:text-blue-500');
+            $('#btn-tab-login').addClass('active-tab-btn');
+            $('#btn-tab-register').removeClass('active-tab-btn');
             
-            $('#form-login').fadeIn(300);
-            $('#form-register').hide();
+            $('#form-login').fadeIn(300).css('display', 'block');
+            $('#form-register').hide().addClass('hidden-tab');
             
             // Administradores e Dev não se "cadastram"
             $('.login-only').fadeIn();
@@ -29,10 +45,10 @@ $(document).ready(function() {
             $('.perfil-btn[data-type="comum"]').click();
         } else {
             isLoginTab = false;
-            $('#btn-tab-register').addClass('active-tab-btn text-gray-700').removeClass('hover:text-blue-500');
-            $('#btn-tab-login').removeClass('active-tab-btn text-gray-700').addClass('hover:text-blue-500');
+            $('#btn-tab-register').addClass('active-tab-btn');
+            $('#btn-tab-login').removeClass('active-tab-btn');
             
-            $('#form-register').fadeIn(300);
+            $('#form-register').fadeIn(300).removeClass('hidden-tab').css('display', 'block');
             $('#form-login').hide();
             
             // Remove botão de admin e dev do cadastro
@@ -50,14 +66,14 @@ $(document).ready(function() {
 
     $('.perfil-btn').on('click', function() {
         // Remover estilos ativos de todos
-        $('.perfil-btn').removeClass('active bg-blue-500 text-white shadow-sm').addClass('bg-gray-100 text-gray-600');
+        $('.perfil-btn').removeClass('active');
         
-        // Adiciona cor e ativa no clicado
-        $(this).removeClass('bg-gray-100 text-gray-600').addClass('active bg-blue-500 text-white shadow-sm');
+        // Adiciona ativo no clicado
+        $(this).addClass('active');
         
         const tipoSelecionado = $(this).data('type'); // comum, professor, admin, desenvolvedor
         
-        // Atualiza campos ocultos nos dois force
+        // Atualiza campos ocultos nos dois forms
         $('input[name="tipo_usuario"]').val(tipoSelecionado);
 
         // ------- Ações baseadas no Tipo -------
@@ -65,10 +81,10 @@ $(document).ready(function() {
         // 1. Mostrar campos de CPF e ENDEREÇO se for *Professor no Cadastro*
         if (!isLoginTab) {
             if (tipoSelecionado === 'professor') {
-                $('#campos-professor').removeClass('hidden').hide().slideDown();
+                $('#campos-professor').slideDown(300);
                 $('input[name="cpf"], input[name="endereco"]').prop('required', true);
             } else {
-                $('#campos-professor').slideUp(function(){ $(this).addClass('hidden'); });
+                $('#campos-professor').slideUp(300);
                 $('input[name="cpf"], input[name="endereco"]').prop('required', false);
             }
         }
@@ -84,6 +100,13 @@ $(document).ready(function() {
                 $('#login-email').attr('placeholder', 'seu@email.com');
                 $('#login-email').attr('type', 'email');
             }
+
+            // Social login wrapper (Google) — esconder para admin/dev/professor
+            if (tipoSelecionado === 'comum') {
+                $('.social-login-wrapper').slideDown(300);
+            } else {
+                $('.social-login-wrapper').slideUp(300);
+            }
         }
     });
 
@@ -97,26 +120,26 @@ $(document).ready(function() {
         
         if (inputField.attr('type') === 'password') {
             inputField.attr('type', 'text');
-            $(this).removeClass('fa-eye-slash').addClass('fa-eye text-blue-500');
+            $(this).removeClass('fa-eye-slash').addClass('fa-eye').css('color', '#A5B4FC');
         } else {
             inputField.attr('type', 'password');
-            $(this).removeClass('fa-eye text-blue-500').addClass('fa-eye-slash');
+            $(this).removeClass('fa-eye').addClass('fa-eye-slash').css('color', '');
         }
     });
 
 
     // ==========================================
-    // REQUISIÇÕES FAKE / REAIS AJAX (BACKEND)
+    // REQUISIÇÕES AJAX (BACKEND)
     // ==========================================
 
     function showFeedbackMessage(msg, isSuccess) {
         const alertBox = $('#mensagem-alerta');
-        alertBox.removeClass('hidden bg-red-100 text-red-700 bg-green-100 text-green-700');
+        alertBox.removeClass('sucesso erro').hide();
         
         if(isSuccess) {
-            alertBox.addClass('bg-green-100 text-green-700').text(msg).fadeIn();
+            alertBox.addClass('sucesso').text(msg).fadeIn();
         } else {
-            alertBox.addClass('bg-red-100 text-red-700').text(msg).fadeIn();
+            alertBox.addClass('erro').text(msg).fadeIn();
         }
 
         setTimeout(() => alertBox.fadeOut(), 5000);
@@ -153,10 +176,10 @@ $(document).ready(function() {
             success: function(res) {
                 if(res.sucesso) {
                     showFeedbackMessage(res.mensagem, true);
-                    // Opcional: redicionar pro login depois ou acessar
-                   setTimeout(() => { 
-                       window.switchMainTab('login'); 
-                   }, 2000);
+                    // Redireciona para verificação de e-mail (Jornada Completa)
+                    setTimeout(() => { 
+                        window.location.href = 'verificar-email.html?email=' + encodeURIComponent(res.email || dataJson.email); 
+                    }, 2000);
                 } else {
                     showFeedbackMessage(res.mensagem, false);
                 }
@@ -184,6 +207,15 @@ $(document).ready(function() {
             tipo_login: tipo
         };
 
+        // Salvar ou limpar "Lembrar-me"
+        if ($('#chk-lembrar-me').is(':checked')) {
+            localStorage.setItem('aethos_lembrar_email', emailOuNome);
+            localStorage.setItem('aethos_lembrar_tipo', tipo);
+        } else {
+            localStorage.removeItem('aethos_lembrar_email');
+            localStorage.removeItem('aethos_lembrar_tipo');
+        }
+
         const btn = $(this).find('button[type="submit"]');
         const oldText = btn.text();
         btn.text('Validando...').prop('disabled', true);
@@ -204,10 +236,24 @@ $(document).ready(function() {
 
                 } else {
                     showFeedbackMessage(res.mensagem, false);
+                    if (res.url_redirecionamento) {
+                        setTimeout(() => { 
+                            window.location.href = res.url_redirecionamento; 
+                        }, 2000);
+                    }
                 }
             },
-            error: function() {
-                showFeedbackMessage('Erro ao comunicar com backend... (Banco não existe?)', false);
+            error: function(xhr, status, error) {
+                // More descriptive error messages
+                if (xhr.status === 0) {
+                    showFeedbackMessage('Não foi possível conectar ao servidor. Verifique se o XAMPP está ligado e rodando na porta correta.', false);
+                } else if (xhr.status === 404) {
+                    showFeedbackMessage('Endpoint de login não encontrado. Verifique a configuração do servidor.', false);
+                } else if (xhr.status === 500) {
+                    showFeedbackMessage('Erro interno no servidor. Verifique os logs do PHP.', false);
+                } else {
+                    showFeedbackMessage('Erro ao comunicar com o backend. Status: ' + xhr.status, false);
+                }
             },
             complete: function() {
                 btn.text(oldText).prop('disabled', false);

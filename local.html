@@ -360,7 +360,12 @@
 
 <!-- HEADER -->
 <header class="header">
-    <a href="index.html" class="logo">⬡ Aethos</a>
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+        <a href="mapa.html" style="width:36px; height:36px; border-radius:50%; background:rgba(13,15,50,0.6); border:1px solid rgba(165,180,252,0.2); display:flex; align-items:center; justify-content:center; color:#A5B4FC; text-decoration:none; font-size:0.95rem; transition:all 0.25s;" title="Voltar ao mapa">
+            <i class="fa fa-arrow-left"></i>
+        </a>
+        <a href="index.html" class="logo">⬡ Aethos</a>
+    </div>
     <div id="btn-sair-wrap">
         <button class="btn-sair" id="btn-sair"><i class="fa fa-sign-out-alt"></i> Sair</button>
     </div>
@@ -547,7 +552,8 @@ $(document).ready(function() {
                 setTimeout(function() {
                     var miniMapa = L.map('mapa-mini').setView([l.latitude, l.longitude], 15);
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap'
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        maxZoom: 19
                     }).addTo(miniMapa);
                     L.marker([l.latitude, l.longitude])
                         .bindPopup('<strong>' + l.nome + '</strong><br>' + l.endereco)

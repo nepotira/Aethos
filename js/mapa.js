@@ -53,50 +53,87 @@ if (modalGeo && btnGeoPermitir && btnGeoNegar) {
     obterLocal();
 }
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+// Usar o tile layer padrão do OpenStreetMap (que será convertido para Dark Mode via filtro CSS)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
 }).addTo(map);
 
 // LÓGICA DA BUSCA E AUTOCOMPLETAR
 let marcacaoAtual = null;
+let circuloRaioAtual = null;
 const searchInput = document.getElementById('searchInput');
+const radiusInput = document.getElementById('radiusInput');
 const searchBtn = document.getElementById('searchBtn');
 const caixaSugestoes = document.getElementById('caixaSugestoes');
 let tempoEspera;
 
-// Busca ao clicar no botão
-searchBtn.addEventListener('click', async () => {
-    const query = searchInput.value.trim();
-    if(!query) return;
+// Função para desenhar o raio
+function desenharRaio(lat, lon, raioKm) {
+    if (circuloRaioAtual) {
+        map.removeLayer(circuloRaioAtual);
+    }
+    const raioMetros = raioKm * 1000;
+    circuloRaioAtual = L.circle([lat, lon], {
+        color: '#A5B4FC',
+        fillColor: '#A5B4FC',
+        fillOpacity: 0.15,
+        radius: raioMetros,
+        weight: 2,
+        dashArray: '5, 10'
+    }).addTo(map);
+    
+    // Ajustar o zoom para caber o círculo
+    map.fitBounds(circuloRaioAtual.getBounds());
+}
 
+// Busca ao clicar no botão (Filtro Local de Esportes)
+searchBtn.addEventListener('click', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    const raioKm = parseFloat(radiusInput.value) || 5;
+    
     caixaSugestoes.style.display = 'none';
 
-    const url= `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-    try{
-        const response = await fetch (url);
-        const results = await response.json();
+    // Obtém o centro atual do mapa (localização do usuário)
+    const center = map.getCenter();
+    desenharRaio(center.lat, center.lng, raioKm);
+
+    if (!window.marcadoresAethos || window.marcadoresAethos.length === 0) {
+        console.warn("Nenhum marcador carregado ainda.");
+        return;
+    }
+
+    let locaisEncontrados = 0;
+
+    // Percorre todos os marcadores carregados na memória
+    window.marcadoresAethos.forEach(marker => {
+        const markerPos = marker.getLatLng();
+        const distanciaMetros = map.distance(center, markerPos);
         
-        if(results.length > 0){
-            const { lat, lon, display_name } = results[0];
-            if(marcacaoAtual){
-                map.removeLayer(marcacaoAtual);
+        const data = marker.aethosData;
+        const matchesQuery = !query || 
+                             data.nome.includes(query) || 
+                             data.modalidade.includes(query);
+
+        // Se está dentro do raio E bate com a pesquisa
+        if (distanciaMetros <= (raioKm * 1000) && matchesQuery) {
+            if (!map.hasLayer(marker)) {
+                marker.addTo(map);
             }
-
-            marcacaoAtual = L.marker([lat, lon]).addTo(map)
-                .bindPopup(display_name)
-                .openPopup();
-            map.setView([lat, lon], 14);
-
-        }else{
-            alert('Nenhum Local encontrado.')
+            locaisEncontrados++;
+        } else {
+            if (map.hasLayer(marker)) {
+                map.removeLayer(marker);
+            }
         }
-    }catch (error){
-        console.error('Ocorreu um Erro ao Buscar o Local:', error);
-        alert('Nenhum Local encontrado.');
-    };
+    });
+
+    if (locaisEncontrados === 0 && query !== '') {
+        alert('Nenhum esporte ou local encontrado nesse raio com o termo pesquisado.');
+    }
 });
 
-// BUG-03 FIX: Aciona busca ao pressionar Enter no campo de texto
+// Aciona busca ao pressionar Enter no campo de texto
 searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
@@ -104,53 +141,47 @@ searchInput.addEventListener('keydown', (e) => {
     }
 });
 
+// Autocomplete simples baseado nos marcadores carregados
 searchInput.addEventListener('input', (evento)=>{
-    const textoDigitado = evento.target.value.trim();
+    const textoDigitado = evento.target.value.trim().toLowerCase();
+    caixaSugestoes.innerHTML = '';
 
-    if (textoDigitado.length < 1 ){
+    if (textoDigitado.length < 1 || !window.marcadoresAethos) {
         caixaSugestoes.style.display = 'none';
         return;
     }
 
-    clearTimeout(tempoEspera);
-
-    tempoEspera = setTimeout(() => {
-        buscarSugestoesAPI(textoDigitado);
-    }, 350); // 350ms de debounce — evita flood de requisições ao Nominatim (exigência dos ToS da API)
-});
-
-async function buscarSugestoesAPI(query){
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`; 
-
-    try{
-        const response = await fetch(url);
-        const results = await response.json();
-
-        caixaSugestoes.innerHTML = '';
-
-        if(results.length > 0){
-            caixaSugestoes.style.display = 'block';
-
-            results.forEach(local => {
-                const item = document.createElement('button');
-                item.className = 'list-group-item list-group-item-action text-start';
-                item.textContent = local.display_name;
-
-                item.addEventListener('click', () => {
-                    caixaSugestoes.style.display = 'none';
-                    searchInput.value = local.display_name;
-                    
-                    if(marcacaoAtual){ map.removeLayer(marcacaoAtual); }
-                    marcacaoAtual = L.marker([local.lat, local.lon]).addTo(map).bindPopup(local.display_name).openPopup();
-                    map.setView([local.lat, local.lon], 14);
-                });
-
-                caixaSugestoes.appendChild(item);
-            });
-        }else{
-            caixaSugestoes.style.display =  'none';
+    const sugestoes = new Set();
+    window.marcadoresAethos.forEach(marker => {
+        const data = marker.aethosData;
+        if (data.modalidade.includes(textoDigitado)) {
+            // Sugerir a modalidade
+            sugestoes.add(data.modalidade.charAt(0).toUpperCase() + data.modalidade.slice(1));
         }
-    } catch (error){
-        console.error('Erro ao buscar sugestões', error );
+        if (data.nome.includes(textoDigitado)) {
+            sugestoes.add(data.nome);
+        }
+    });
+
+    if (sugestoes.size > 0) {
+        caixaSugestoes.style.display = 'block';
+        let count = 0;
+        sugestoes.forEach(sugestao => {
+            if (count >= 5) return; // Limitar a 5 sugestões
+            const item = document.createElement('button');
+            item.className = 'list-group-item list-group-item-action text-start';
+            item.textContent = sugestao;
+            
+            item.addEventListener('click', () => {
+                caixaSugestoes.style.display = 'none';
+                searchInput.value = sugestao;
+                searchBtn.click();
+            });
+
+            caixaSugestoes.appendChild(item);
+            count++;
+        });
+    } else {
+        caixaSugestoes.style.display = 'none';
     }
-}
+});

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Aethos — Encontre espaços esportivos, professores e academias perto de você no mapa.">
+    <title>Aethos — Mapa de Espaços Esportivos</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Estilos específicos complementares para o mapa */
+        .marcador-local {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ======= LOGO NO TOPO DA SIDEBAR ======= */
+        .nav-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(165,180,252,0.15);
+        }
+        .nav-logo-icon {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #A5B4FC;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        /* ======= PERFIL COM NOME NA SIDEBAR ======= */
+        .nav-profile-block {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(165,180,252,0.15);
+        }
+        .nav-profile-avatar {
+            display: block;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid rgba(165,180,252,0.5);
+            overflow: hidden;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+            transition: transform 0.3s, border-color 0.3s;
+            margin-bottom: 0.4rem;
+        }
+        .nav-profile-avatar:hover {
+            transform: scale(1.08);
+            border-color: rgba(165,180,252,0.8);
+        }
+        .nav-profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .nav-profile-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* ======= SIDEBAR NAV-ITEM PADDING FIX ======= */
+        /* (Issue 9: Icons/text too close to circle borders) */
+        .nav-lateral .nav-item {
+            width: 52px;
+            height: 52px;
+            padding: 4px;
+        }
+        .nav-lateral .nav-item i {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+        }
+        .nav-lateral .nav-item span {
+            font-size: 0.58rem;
+        }
+
+        /* ======= RECENTES: Item de local clicado ======= */
+        .recente-item {
+            padding: 0.8rem 1rem;
+            border-radius: 16px;
+            background: rgba(13,15,50,0.45);
+            border: 1px solid rgba(165,180,252,0.15);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .recente-item:hover {
+            background: rgba(165,180,252,0.1);
+            border-color: rgba(165,180,252,0.35);
+        }
+        .recente-item .recente-nome {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+        .recente-item .recente-modalidade {
+            font-size: 0.75rem;
+            color: #A5B4FC;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .recente-item .recente-data {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.35);
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MENU LATERAL ESBELTO (Google Maps Style - Liquid Glass) -->
+    <nav class="nav-lateral" style="opacity: 0;">
+        
+        <!-- LOGO AETHOS NO TOPO -->
+        <div class="nav-logo">
+            <a href="index.html" class="nav-logo-icon" title="Aethos">⬡</a>
+        </div>
+
+        <!-- FOTO DE PERFIL + NOME DO USUÁRIO -->
+        <div class="nav-profile-block" id="nav-profile-container">
+            <a href="perfil.html" class="nav-profile-avatar" title="Meu Perfil">
+                <img id="img-nav-profile" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect fill='%230D0F32' width='100' height='100'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23A5B4FC'/%3E%3Cellipse cx='50' cy='85' rx='30' ry='22' fill='%23A5B4FC'/%3E%3C/svg%3E" alt="Avatar">
+            </a>
+            <span class="nav-profile-name" id="nav-profile-name"></span>
+        </div>
+
+        <a href="#" class="nav-item active" id="btn-menu-buscar" title="Buscar">
+            <i class="fa fa-search"></i>
+            <span>Buscar</span>
+        </a>
+        <a href="#" class="nav-item" id="btn-menu-salvos" title="Salvos">
+            <i class="fa fa-bookmark"></i>
+            <span>Salvos</span>
+        </a>
+        <a href="#" class="nav-item" id="btn-menu-recentes" title="Recentes">
+            <i class="fa fa-history"></i>
+            <span>Recentes</span>
+        </a>
+
+        <div class="nav-bottom">
+            <a href="login.html" id="nav-entrar" class="nav-item" title="Entrar">
+                <i class="fa fa-sign-in-alt"></i>
+                <span>Entrar</span>
+            </a>
+            <a href="admin.html" id="nav-admin" class="nav-item" style="display: none;" title="Painel Admin">
+                <i class="fa fa-shield-alt"></i>
+                <span>Admin</span>
+            </a>
+            <a href="#" id="nav-sair" class="nav-item" style="display: none;" title="Sair">
+                <i class="fa fa-sign-out-alt"></i>
+                <span>Sair</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- PAINEL LATERAL: SALVOS (Escondido por padrão) -->
+    <div class="sidebar-mapa glass-panel" id="panel-salvos" style="display: none; opacity: 0;">
+        <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; color: #A5B4FC; margin-bottom: 2rem;"><i class="fa fa-bookmark"></i> Salvos</h2>
+        <div id="lista-salvos" style="display:flex; flex-direction:column; gap:1rem;">
+            <!-- Preenchido via JS -->
+            <div style="text-align:center; padding: 2rem; color:rgba(255,255,255,0.4);">
+                <i class="fa fa-box-open" style="font-size:2rem; margin-bottom:1rem;"></i>
+                <p>Nenhum local salvo encontrado.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL LATERAL: RECENTES (Locais clicados no mapa, NÃO buscas) -->
+    <div class="sidebar-mapa glass-panel" id="panel-recentes" style="display: none; opacity: 0;">
+        <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; color: #A5B4FC; margin-bottom: 2rem;"><i class="fa fa-history"></i> Locais Recentes</h2>
+        <div id="lista-recentes" style="display:flex; flex-direction:column; gap:0.75rem;">
+            <!-- Preenchido via JS -->
+            <div style="text-align:center; padding: 2rem; color:rgba(255,255,255,0.4);">
+                <i class="fa fa-box-open" style="font-size:2rem; margin-bottom:1rem;"></i>
+                <p>Nenhum local visualizado recentemente.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL LATERAL DE BUSCA (Ativo por padrão) -->
+    <div class="sidebar-mapa glass-panel" id="panel-buscar" style="opacity: 0;">
+        <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; color: #A5B4FC; margin-bottom: 2rem;">Buscar Esportes</h2>
+        
+        <div class="search-input-group" style="margin-bottom: 1.5rem;">
+            <label style="font-size: 0.85rem; color: rgba(255,255,255,0.6); padding: 0 0.5rem;">O que você procura?</label>
+            <div class="search-input-row">
+                <i class="fa fa-search" style="color: #A5B4FC; margin-left: 0.5rem;"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Ex: Karatê, Futebol">
+            </div>
+            <div id="caixaSugestoes" style="display: none;"></div>
+        </div>
+
+        <div class="search-input-group" style="margin-bottom: 2.5rem;">
+            <label style="font-size: 0.85rem; color: rgba(255,255,255,0.6); padding: 0 0.5rem;">Raio de Busca (km)</label>
+            <div class="search-input-row">
+                <i class="fa fa-map-marker-alt" style="color: #A5B4FC; margin-left: 0.5rem;"></i>
+                <input type="number" id="radiusInput" class="search-input" value="5" min="1" max="100" style="width: 100%;">
+                <div style="display:flex; flex-direction:column; gap:2px; margin-right:0.5rem; cursor:pointer;">
+                    <i class="fa fa-chevron-up" id="btn-radius-up" style="color:#A5B4FC; font-size:0.7rem; opacity:0.8;"></i>
+                    <i class="fa fa-chevron-down" id="btn-radius-down" style="color:#A5B4FC; font-size:0.7rem; opacity:0.8;"></i>
+                </div>
+            </div>
+        </div>
+
+        <button class="search-btn" id="searchBtn"><i class="fa fa-radar"></i> Buscar no Raio</button>
+    </div>
+
+    <!-- SPLASH SCREEN DE BOAS VINDAS (Overlay) -->
+    <div class="modal-overlay" id="splash-overlay" style="z-index: 2000; display: flex; background: rgba(13, 15, 50, 0.85); backdrop-filter: blur(12px);">
+        <div class="glass-panel" style="text-align: center; padding: 3rem 2rem; border-radius: 32px; animation: appleBlurReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; max-width: 500px; width: 100%;">
+            <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 3.5rem; font-weight: 800; color: #A5B4FC; margin-bottom: 0.5rem; text-shadow: 0 4px 20px rgba(165, 180, 252, 0.4);">⬡ Aethos</div>
+            <p style="font-family: 'Inter', sans-serif; font-size: 1.1rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 3rem; line-height: 1.6;">Conectando você aos melhores locais e professores de esporte da sua região.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <a href="login.html" class="btn-aethos btn-aethos-primary" style="padding: 1.2rem; font-size: 1.1rem; border-radius: 20px;">
+                    <i class="fa fa-user-circle"></i> Fazer Login ou Cadastro
+                </a>
+                <button id="btn-explorar-mapa" class="btn-aethos" style="padding: 1.2rem; font-size: 1.1rem; border-radius: 20px; background: rgba(165, 180, 252, 0.08); border-color: rgba(165, 180, 252, 0.2);">
+                    <i class="fa fa-map-marked-alt"></i> Explorar o Mapa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE PERMISSÃO DE LOCALIZAÇÃO -->
+    <div class="modal-overlay" id="modal-geo">
+        <div class="modal-box">
+            <i class="fa fa-map-marker-alt" style="font-size: 3rem; color: #A5B4FC; margin-bottom: 1rem;"></i>
+            <h3>Usar sua localização?</h3>
+            <p style="font-size: 0.95rem; color: rgba(255,255,255,0.7); margin-bottom: 2rem;">
+                O Aethos precisa da sua localização para centralizar o mapa na sua região e mostrar os espaços esportivos mais próximos de você.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="btn-geo-negar" class="btn-aethos">Não, obrigado</button>
+                <button id="btn-geo-permitir" class="btn-aethos btn-aethos-primary">Permitir</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-100 h-100 z-0" id="map"></div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/mapa.js"></script>
+    <script src="js/mapa-locais.js"></script>
+
+    <script>
+        // ─── Verifica sessão e ajusta botões do menu lateral ──────────────
+        $.getJSON('backend/verificar_sessao.php', function(res) {
+            if (res.autenticado) {
+                // Usuário logado: Esconde splash imediatamente e mostra UI do mapa com animação
+                $('#splash-overlay').hide();
+                $('.nav-lateral').addClass('apple-blur-anim');
+                $('.sidebar-mapa').addClass('apple-blur-anim-delayed');
+
+                $('#nav-entrar').hide();
+                $('#nav-admin, #nav-sair').hide(); // reset
+                
+                if (res.tipo_usuario === 'admin' || res.tipo_usuario === 'desenvolvedor') {
+                    $('#nav-admin').show();
+                }
+                $('#nav-sair').show();
+
+                // Mostra avatar + nome se disponível
+                $('#nav-profile-container').css('display', 'flex');
+                if (res.nome) {
+                    $('#nav-profile-name').text(res.nome.split(' ')[0]);
+                }
+                if (res.foto_perfil) {
+                    $('#img-nav-profile').attr('src', res.foto_perfil);
+                }
+
+                // Botão sair
+                $('#nav-sair').on('click', function(e) {
+                    e.preventDefault();
+                    $.post('backend/logout.php', function() {
+                        window.location.reload();
+                    });
+                });
+            } else {
+                // Não autenticado: Aguarda clique no botão Explorar Mapa para sumir o splash
+                $('#btn-explorar-mapa').on('click', function(e) {
+                    e.preventDefault();
+                    $('#splash-overlay').fadeOut(400, function() {
+                        $('.nav-lateral').addClass('apple-blur-anim');
+                        $('.sidebar-mapa').addClass('apple-blur-anim-delayed');
+                    });
+                });
+            }
+        }).fail(function() {
+            // Falha na requisição: Trata como não autenticado
+            $('#btn-explorar-mapa').on('click', function(e) {
+                e.preventDefault();
+                $('#splash-overlay').fadeOut(400, function() {
+                    $('.nav-lateral').addClass('apple-blur-anim');
+                    $('.sidebar-mapa').addClass('apple-blur-anim-delayed');
+                });
+            });
+        });
+
+        // ─── Lógica para alternar painéis na Sidebar ──────────────────────
+        $('#btn-menu-buscar').on('click', function(e) {
+            e.preventDefault();
+            $('.nav-item').removeClass('active');
+            $(this).addClass('active');
+            $('.sidebar-mapa').hide();
+            $('#panel-buscar').fadeIn(300);
+        });
+
+        $('#btn-menu-salvos').on('click', function(e) {
+            e.preventDefault();
+            $('.nav-item').removeClass('active');
+            $(this).addClass('active');
+            $('.sidebar-mapa').hide();
+            $('#panel-salvos').fadeIn(300);
+            carregarSalvos();
+        });
+
+        $('#btn-menu-recentes').on('click', function(e) {
+            e.preventDefault();
+            $('.nav-item').removeClass('active');
+            $(this).addClass('active');
+            $('.sidebar-mapa').hide();
+            $('#panel-recentes').fadeIn(300);
+            carregarRecentes();
+        });
+
+        // Controles de Raio Customizados
+        $('#btn-radius-up').on('click', function() {
+            let v = parseInt($('#radiusInput').val()) || 0;
+            $('#radiusInput').val(v + 1);
+        });
+        $('#btn-radius-down').on('click', function() {
+            let v = parseInt($('#radiusInput').val()) || 0;
+            if(v > 1) $('#radiusInput').val(v - 1);
+        });
+
+        // ─── LOCAIS SALVOS (localStorage) ──────────────────────
+        function carregarSalvos() {
+            let salvos = JSON.parse(localStorage.getItem('aethos_salvos')) || [];
+            if(salvos.length === 0) {
+                $('#lista-salvos').html('<div style="text-align:center; padding: 2rem; color:rgba(255,255,255,0.4);"><i class="fa fa-box-open" style="font-size:2rem; margin-bottom:1rem;"></i><p>Nenhum local salvo encontrado.</p></div>');
+            } else {
+                let html = salvos.map(s => `<div class="recente-item" onclick="window.location.href='local.html?id=${s.id}'"><div class="recente-nome">${s.nome}</div><div class="recente-modalidade">${s.modalidade}</div></div>`).join('');
+                $('#lista-salvos').html(html);
+            }
+        }
+
+        // ─── LOCAIS RECENTES (Locais clicados no mapa, guardados em localStorage) ──────────────────
+        // Função global para registrar um local como "recente" (chamada do mapa-locais.js)
+        window.registrarLocalRecente = function(localData) {
+            let recentes = JSON.parse(localStorage.getItem('aethos_locais_recentes')) || [];
+            
+            // Remover se já existir (para mover pro topo)
+            recentes = recentes.filter(r => r.id !== localData.id);
+            
+            // Adicionar no início
+            recentes.unshift({
+                id: localData.id,
+                nome: localData.nome,
+                modalidade: localData.modalidade,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Limitar a 20 itens
+            if (recentes.length > 20) recentes = recentes.slice(0, 20);
+            
+            localStorage.setItem('aethos_locais_recentes', JSON.stringify(recentes));
+        };
+
+        function carregarRecentes() {
+            let recentes = JSON.parse(localStorage.getItem('aethos_locais_recentes')) || [];
+            if(recentes.length === 0) {
+                $('#lista-recentes').html('<div style="text-align:center; padding: 2rem; color:rgba(255,255,255,0.4);"><i class="fa fa-box-open" style="font-size:2rem; margin-bottom:1rem;"></i><p>Nenhum local visualizado recentemente.</p></div>');
+            } else {
+                let html = recentes.map(function(r) {
+                    // Format date
+                    var data = '';
+                    if (r.timestamp) {
+                        var d = new Date(r.timestamp);
+                        var agora = new Date();
+                        var diffMs = agora - d;
+                        var diffMin = Math.floor(diffMs / 60000);
+                        if (diffMin < 1) data = 'Agora mesmo';
+                        else if (diffMin < 60) data = 'Há ' + diffMin + ' min';
+                        else if (diffMin < 1440) data = 'Há ' + Math.floor(diffMin/60) + 'h';
+                        else data = d.toLocaleDateString('pt-BR');
+                    }
+                    return '<div class="recente-item" onclick="window.location.href=\'local.html?id=' + r.id + '\'">' +
+                        '<div class="recente-nome"><i class="fa fa-map-marker-alt" style="margin-right:0.4rem; color:rgba(165,180,252,0.5); font-size:0.8rem;"></i>' + r.nome + '</div>' +
+                        '<div class="recente-modalidade">' + r.modalidade + '</div>' +
+                        (data ? '<div class="recente-data">' + data + '</div>' : '') +
+                    '</div>';
+                }).join('');
+                $('#lista-recentes').html(html);
+            }
+        }
+    </script>
+</body>
+</html>

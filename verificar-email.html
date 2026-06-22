@@ -9,6 +9,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            DEFAULT: '#0D0F32',
+                            dark: '#080a22',
+                        },
+                        lavender: {
+                            light: '#E0E7FF',
+                            DEFAULT: '#A5B4FC',
+                            dark: '#818CF8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -23,6 +46,11 @@
         }
         h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
         
+        @keyframes appleBlurReveal {
+            0% { opacity: 0; filter: blur(20px); transform: scale(0.98); }
+            100% { opacity: 1; filter: blur(0px); transform: scale(1); }
+        }
+
         .glass-box {
             background: rgba(13, 15, 50, 0.6);
             backdrop-filter: blur(12px);
@@ -32,6 +60,7 @@
             padding: 3rem 2rem;
             width: 100%;
             max-width: 440px;
+            animation: appleBlurReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         
         .input-glass {
@@ -117,11 +146,11 @@
 
             function showFeedback(msg, success) {
                 const alertBox = $('#mensagem-alerta');
-                alertBox.removeClass('hidden bg-red-100 text-red-700 border-red-300 bg-green-100 text-green-700 border-green-300');
+                alertBox.removeClass('hidden bg-red-950/40 text-red-300 border border-red-500/30 bg-green-950/40 text-green-300 border border-green-500/30');
                 if(success) {
-                    alertBox.addClass('bg-green-100 text-green-700 border-green-300').text(msg).fadeIn();
+                    alertBox.addClass('bg-green-950/40 text-green-300 border border-green-500/30').text(msg).fadeIn();
                 } else {
-                    alertBox.addClass('bg-red-100 text-red-700 border-red-300').text(msg).fadeIn();
+                    alertBox.addClass('bg-red-950/40 text-red-300 border border-red-500/30').text(msg).fadeIn();
                 }
             }
 
@@ -169,9 +198,34 @@
             });
 
             $('#btn-reenviar').on('click', function() {
-                // Aqui entraria a lógica de reenviar o código, que faria um POST no backend.
-                // Como não implementamos o PHP de reenvio ainda, daremos um aviso:
-                alert('Função de reenvio será implementada em breve! Cheque seu console no cadastro simulado.');
+                const userEmail = $('#user-email').val();
+                if(!userEmail) {
+                    showFeedback('E-mail não identificado.', false);
+                    return;
+                }
+                
+                const btn = $(this);
+                btn.prop('disabled', true).text('Reenviando...');
+
+                $.ajax({
+                    url: 'backend/verificar_email.php?acao=reenviar',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ email: userEmail }),
+                    success: function(res) {
+                        if(res.sucesso) {
+                            showFeedback(res.mensagem, true);
+                        } else {
+                            showFeedback(res.mensagem, false);
+                        }
+                    },
+                    error: function() {
+                        showFeedback('Erro ao solicitar novo código.', false);
+                    },
+                    complete: function() {
+                        btn.prop('disabled', false).text('Reenviar código');
+                    }
+                });
             });
         });
     </script>

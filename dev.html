@@ -50,10 +50,25 @@
         .btn-sair:hover { background: rgba(165,180,252,0.1); }
 
         /* LAYOUT */
-        .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 64px); }
+        .layout { 
+            display: grid; 
+            grid-template-columns: 240px 1fr; 
+            min-height: calc(100vh - 64px - 2rem);
+            margin: 1rem;
+            gap: 1rem;
+        }
 
         /* SIDEBAR */
-        .sidebar { background: rgba(13,15,50,0.4); border-right: 1px solid var(--border); padding: 1.5rem 0; }
+        .sidebar {
+            background: rgba(13,15,50,0.4);
+            border: 1px solid var(--border);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            border-radius: 24px;
+            padding: 2rem 0;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.1);
+        }
         .sidebar-section { padding: 0.5rem 1.5rem; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.25); margin-bottom: 0.25rem; margin-top: 1rem; }
         .sidebar-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1.5rem; cursor: pointer; font-size: 0.875rem; color: rgba(255,255,255,0.55); transition: all 0.2s; border-left: 3px solid transparent; }
         .sidebar-item:hover { color: var(--branco); background: rgba(165,180,252,0.05); }
@@ -62,7 +77,17 @@
         .badge-count { margin-left: auto; background: rgba(239,68,68,0.8); color: #fff; border-radius: 10px; font-size: 0.7rem; padding: 1px 7px; font-weight: 700; display: none; }
 
         /* CONTENT */
-        .content { padding: 2rem; overflow-y: auto; }
+        .content { 
+            padding: 2.5rem; 
+            overflow-y: auto; 
+            background: rgba(13,15,50,0.4);
+            border: 1px solid var(--border);
+            border-top: 1px solid rgba(255,255,255,0.15);
+            border-radius: 32px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.1);
+        }
         .painel-titulo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 0.25rem; }
         .painel-sub { color: rgba(255,255,255,0.4); font-size: 0.875rem; margin-bottom: 2rem; }
 
