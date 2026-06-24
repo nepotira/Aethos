@@ -81,6 +81,9 @@ Após login bem-sucedido, cada perfil vai para uma página diferente:
 4. **Redirecionamentos e Navegação Limpa:** Após o sucesso de fluxos críticos (Login, Cadastro, Atualização de Senha), o usuário deve ser redirecionado automaticamente para a rota pertinente, sem ficar preso em uma tela de sucesso estática.
 5. **Completude de Funcionalidade:** Features "comuns" não podem ser entregues pela metade. (ex: "Listagem" exige paginação/scroll e busca; "Exclusão" exige Modal de Confirmação; "Upload" exige preview da imagem na tela antes de enviar).
 
+### 2.8 Lei da Análise Preliminar (Exclusiva para Agentes de IA)
+**O Agente de IA DEVE OBRIGATORIAMENTE ler TODOS os arquivos primários do sistema antes de aplicar qualquer requisição de alteração solicitada pelo usuário.** Esta regra visa garantir a coesão arquitetural e evitar danos por falta de contexto. O agente deve analisar cautelosamente `login.html`, scripts (`auth.js`, `mapa.js`), backends PHP pertinentes e o schema `database.sql` antes de propor ou executar modificações.
+
 ---
 
 ## 3. ESTADO ATUAL DO SISTEMA (O que já existe no repositório)

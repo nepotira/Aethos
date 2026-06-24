@@ -8,8 +8,8 @@
 // --- Configurações SMTP (para envio de e-mail) ---
 define('SMTP_HOST',      'smtp.gmail.com');
 define('SMTP_PORT',      587);
-define('SMTP_USER',      'seu_email@gmail.com');   // Altere para o e-mail da conta
-define('SMTP_PASS',      'sua_senha_app');         // Use App Password do Google
+define('SMTP_USER',      'pedroca.borges013@gmail.com');
+define('SMTP_PASS',      'tzbgqgdrizshnvjj');
 define('SMTP_FROM_NAME', 'Aethos');
 
 // --- URL base do sistema ---

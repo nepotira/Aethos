@@ -117,7 +117,7 @@ switch ($acao) {
                 $assunto  = 'Aethos — Redefinição de Senha';
                 $corpo    = "Olá, {$user['nome']}!\n\nClique no link abaixo para redefinir sua senha:\n{$link}\n\nEste link expira em " . TOKEN_EXPIRACAO_HORAS . " hora(s).";
                 $headers  = "From: " . SMTP_FROM_NAME . " <" . SMTP_USER . ">\r\nContent-Type: text/plain; charset=UTF-8\r\n";
-                $enviado  = mail($email, $assunto, $corpo, $headers);
+                $enviado  = @mail($email, $assunto, $corpo, $headers);
             }
 
             registrar_log($pdo, 'INFO', 'auth', 'token_redefinicao_gerado',

@@ -25,7 +25,10 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
             overflow-x: hidden;
+            overflow-y: auto;
             font-family: 'Inter', sans-serif;
             background-image: radial-gradient(circle at 10% 20%, rgba(165, 180, 252, 0.05) 0%, transparent 40%),
                               radial-gradient(circle at 90% 80%, rgba(165, 180, 252, 0.05) 0%, transparent 40%);
@@ -154,8 +157,15 @@
             color: rgba(255,255,255,0.4);
             cursor: pointer;
             transition: 0.2s;
+            z-index: 99;
+            pointer-events: auto;
         }
         .toggle-password:hover { color: var(--lavanda); }
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear,
+        input[type="password"]::-webkit-credentials-auto-fill-button {
+            display: none !important;
+        }
 
         /* Profile Selector */
         .profile-selector {
@@ -271,6 +281,32 @@
         }
         #mensagem-alerta.erro { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
         #mensagem-alerta.sucesso { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac; }
+
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(13, 15, 50, 0.95);
+            border: 1px solid rgba(165, 180, 252, 0.2);
+            border-radius: 0 0 12px 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            backdrop-filter: blur(12px);
+        }
+        .autocomplete-dropdown div {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.8);
+        }
+        .autocomplete-dropdown div:hover {
+            background: rgba(165, 180, 252, 0.15);
+            color: #A5B4FC;
+        }
     </style>
 </head>
 <body>
@@ -367,16 +403,72 @@
 
                 <!-- CARGA ESPECÍFICA DO PROFESSOR -->
                 <div id="campos-professor">
-                    <div class="section-title">Informações do Local/Professor</div>
+                    <div class="section-title">Informações Pessoais do Professor</div>
                     
                     <div class="form-group">
-                        <label>CPF</label>
-                        <input type="text" name="cpf" class="input-aethos" placeholder="000.000.000-00">
+                        <label>CPF <span id="cpf-feedback" style="font-size: 0.75rem; font-weight: normal; float: right;"></span></label>
+                        <input type="text" id="reg-cpf" name="cpf" class="input-aethos" placeholder="000.000.000-00" maxlength="14">
                     </div>
 
+                    <hr style="border-color: rgba(255,255,255,0.1); margin: 1.5rem 0;">
+
+                    <div class="section-title">Informações do Local Esportivo</div>
+
                     <div class="form-group">
-                        <label>Endereço Fixo</label>
-                        <input type="text" name="endereco" class="input-aethos" placeholder="Rua do Dojo, 123">
+                        <label style="margin-bottom: 0.8rem;">Este local já está cadastrado no mapa?</label>
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 0.85rem;">
+                                <input type="radio" name="local_existente" value="sim"> Sim, já existe
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: rgba(255,255,255,0.8); font-size: 0.85rem;">
+                                <input type="radio" name="local_existente" value="nao" checked> Não, cadastrar novo
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Campos para NOVO LOCAL -->
+                    <div id="campos-novo-local">
+                        <div class="form-group">
+                            <label>Nome do Local / Instituição</label>
+                            <input type="text" name="nome_local" id="nome-local" class="input-aethos" placeholder="Ex: Dojo Silva, ETEC Itaquera">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Categoria Esportiva Principal</label>
+                            <select name="modalidade" id="modalidade-local" class="input-aethos" style="appearance: none;">
+                                <option value="" disabled selected>Selecione um esporte...</option>
+                                <option value="Karatê">Karatê</option>
+                                <option value="Capoeira">Capoeira</option>
+                                <option value="Judô">Judô</option>
+                                <option value="Jiu-Jitsu">Jiu-Jitsu</option>
+                                <option value="Futebol">Futebol / Futsal</option>
+                                <option value="Basquete">Basquete</option>
+                                <option value="Vôlei">Vôlei</option>
+                                <option value="Natação">Natação</option>
+                                <option value="Musculação">Academia / Musculação</option>
+                                <option value="Crossfit">Crossfit</option>
+                                <option value="Dança">Dança</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Endereço Fixo ou Ponto de Interesse (POI)</label>
+                            <input type="text" id="endereco-autocomplete" name="endereco" class="input-aethos" placeholder="Digite o endereço ou nome da instituição..." autocomplete="off">
+                            <input type="hidden" name="latitude" id="local-lat">
+                            <input type="hidden" name="longitude" id="local-lon">
+                            <div id="autocomplete-results" class="autocomplete-dropdown"></div>
+                        </div>
+                    </div>
+
+                    <!-- Campos para LOCAL EXISTENTE -->
+                    <div id="campos-buscar-local" style="display: none;">
+                        <div class="form-group">
+                            <label>Buscar Local Existente</label>
+                            <select name="local_id_existente" id="select-local-existente" class="input-aethos" style="appearance: none;">
+                                <option value="" disabled selected>Carregando locais...</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -451,18 +543,7 @@
             }
         });
 
-        // Mostrar / Esconder Senha
-        $('.toggle-password').on('click', function() {
-            const targetId = $(this).data('target');
-            const input = $('#' + targetId);
-            if (input.attr('type') === 'password') {
-                input.attr('type', 'text');
-                $(this).removeClass('fa-eye-slash').addClass('fa-eye');
-            } else {
-                input.attr('type', 'password');
-                $(this).removeClass('fa-eye').addClass('fa-eye-slash');
-            }
-        });
+
 
         // Google Sign-In via Identity Services Callback
         function handleCredentialResponse(response) {
@@ -507,6 +588,6 @@
     </script>
 
     <!-- Script de Lógica Principal (AJAX e Memória local) -->
-    <script src="js/auth.js"></script>
+    <script src="js/auth.js?v=2" charset="utf-8"></script>
 </body>
 </html>

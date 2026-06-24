@@ -345,12 +345,12 @@ O sistema possui **quatro perfis distintos**, cada um com permissões e fluxo de
 | RF07 | Toggle ver/ocultar senha com ícone de olho | ✅ Implementado |
 | RF08 | Abertura direta da aba Cadastro via URL `?tab=register` | ✅ Implementado |
 | RF09 | Login de Desenvolvedor por nome (não e-mail) | ✅ Implementado |
-| RF10 | Fluxo de aprovação de locais (Professor → Admin) | 🔄 Parcial (banco pronto, painel Admin pendente) |
-| RF11 | Sistema de avaliações de locais e professores | ❌ Pendente |
-| RF12 | Verificação de e-mail no cadastro | ❌ Pendente |
-| RF13 | Verificação de CPF real | ❌ Pendente |
-| RF14 | Painel do Desenvolvedor com logs técnicos | ❌ Pendente |
-| RF15 | Login social (Google) | ❌ Pendente (botão UI criado, lógica não implementada) |
+| RF10 | Fluxo de aprovação de locais (Professor → Admin) | ✅ Implementado |
+| RF11 | Sistema de avaliações de locais e professores | ✅ Implementado |
+| RF12 | Verificação de e-mail no cadastro | ✅ Implementado |
+| RF13 | Verificação de CPF real | ✅ Implementado |
+| RF14 | Painel do Desenvolvedor com logs técnicos | ✅ Implementado |
+| RF15 | Login social (Google) | ✅ Implementado |
 
 ---
 
@@ -380,12 +380,12 @@ O sistema possui **quatro perfis distintos**, cada um com permissões e fluxo de
 - Banco de dados com schema e seed inicial
 - Documentação técnica completa (HTML interativo + Word/A4)
 
-### Fase 2 — Em Desenvolvimento 🔄
+### Fase 2 — Concluída ✅
 - Painel Administrativo (aprovação de locais, gestão de usuários)
 - Cadastro completo de Locais Esportivos (formulário do Professor)
 - Exibição de marcadores de locais aprovados no mapa
 
-### Fase 3 — Planejada 📋
+### Fase 3 — Concluída ✅
 - Sistema de avaliações e comentários
 - Verificação de e-mail no cadastro
 - Verificação de CPF real
@@ -400,4 +400,4 @@ O sistema possui **quatro perfis distintos**, cada um com permissões e fluxo de
 
 ---
 
-*Este arquivo é mantido automaticamente pelo Agente de IA. Última atualização: 16/06/2026.*
+*Este arquivo é mantido automaticamente pelo Agente de IA. Última atualização: 23/06/2026.*

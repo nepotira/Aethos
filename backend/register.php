@@ -81,6 +81,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['email']) && isset($data
     $codigo_verificacao = sprintf("%06d", mt_rand(1, 999999));
 
     try {
+        // --- LIMPEZA DE CADASTROS NÃO VALIDADOS ---
+        // Se o usuário tentou cadastrar antes mas não validou o e-mail, deletamos para ele tentar de novo
+        $stmt_check = $pdo->prepare("SELECT id, email_verificado FROM usuarios WHERE email = :email OR (cpf = :cpf AND cpf IS NOT NULL)");
+        $stmt_check->execute(array(':email' => $email, ':cpf' => $cpf));
+        $existentes = $stmt_check->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($existentes as $ext) {
+            if ($ext['email_verificado'] == 1) {
+                echo json_encode(array('sucesso' => false, 'mensagem' => 'O E-mail ou CPF já está cadastrado e validado. Faça login.'));
+                exit;
+            } else {
+                $stmt_del = $pdo->prepare("DELETE FROM usuarios WHERE id = :id");
+                $stmt_del->execute(array(':id' => $ext['id']));
+            }
+        }
+
+        $pdo->beginTransaction();
+
+        // Se o professor selecionou um local já existente, copiamos o endereço dele
+        if ($tipoUsuario === 'professor' && isset($data['local_existente']) && $data['local_existente'] === 'sim') {
+            $local_id_existente = isset($data['local_id_existente']) ? $data['local_id_existente'] : null;
+            if (!$local_id_existente) {
+                echo json_encode(array('sucesso' => false, 'mensagem' => 'Selecione o local existente.'));
+                exit;
+            }
+            $stmtLoc = $pdo->prepare("SELECT endereco FROM locais_esportivos WHERE id = :id");
+            $stmtLoc->execute(array(':id' => $local_id_existente));
+            $localData = $stmtLoc->fetch(PDO::FETCH_ASSOC);
+            if ($localData) {
+                $endereco_fixo = $localData['endereco'];
+            }
+        }
+
         $sql = "INSERT INTO usuarios (tipo_usuario, nome, apelido, email, senha, ddd, telefone, cpf, endereco_fixo, codigo_verificacao, email_verificado)
                 VALUES (:tipo, :nome, :apelido, :email, :senha, :ddd, :tel, :cpf, :endereco, :codigo, 0)";
 
@@ -98,6 +131,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['email']) && isset($data
 
         if ($stmt->execute()) {
             $novo_id = $pdo->lastInsertId();
+
+            // Se for professor e for criar um NOVO local, inserimos na tabela locais_esportivos
+            if ($tipoUsuario === 'professor' && (!isset($data['local_existente']) || $data['local_existente'] === 'nao')) {
+                $nome_local = isset($data['nome_local']) ? trim($data['nome_local']) : 'Local de ' . $nome;
+                $modalidade = isset($data['modalidade']) ? trim($data['modalidade']) : 'Outro';
+                $lat        = (isset($data['latitude']) && $data['latitude'] !== '') ? $data['latitude'] : null;
+                $lon        = (isset($data['longitude']) && $data['longitude'] !== '') ? $data['longitude'] : null;
+
+                $sqlLocal = "INSERT INTO locais_esportivos (professor_id, nome, modalidade, endereco, latitude, longitude, aprovado) 
+                             VALUES (:prof_id, :nome_loc, :mod, :end, :lat, :lon, 0)";
+                $stmtLoc = $pdo->prepare($sqlLocal);
+                $stmtLoc->bindParam(':prof_id',  $novo_id);
+                $stmtLoc->bindParam(':nome_loc', $nome_local);
+                $stmtLoc->bindParam(':mod',      $modalidade);
+                $stmtLoc->bindParam(':end',      $endereco_fixo);
+                $stmtLoc->bindParam(':lat',      $lat);
+                $stmtLoc->bindParam(':lon',      $lon);
+                $stmtLoc->execute();
+            }
+
+            $pdo->commit();
+
             registrar_log($pdo, 'INFO', 'auth', 'novo_cadastro_pendente',
                 'Novo cadastro pendente de verificação: ' . $nome . ' (' . $tipoUsuario . ') — ' . $email,
                 $novo_id);
@@ -140,12 +195,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['email']) && isset($data
                 }
             }
 
-            // Fallback para mail() nativo caso o PHPMailer não esteja configurado
+            // Fallback para mail() nativo
             if (!$enviado) {
                 $assunto = 'Aethos — Verifique seu E-mail';
                 $corpo   = "Olá, {$nome}!\n\nSeu código de verificação é: {$codigo_verificacao}\n\nInsira este código na plataforma para ativar sua conta.";
                 $headers = "From: no-reply@aethos.com\r\nContent-Type: text/plain; charset=UTF-8\r\n";
-                mail($email, $assunto, $corpo, $headers);
+                @mail($email, $assunto, $corpo, $headers);
             }
 
             echo json_encode(array(
@@ -154,10 +209,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($data['email']) && isset($data
                 'email'    => $email
             ));
         } else {
+            $pdo->rollBack();
             echo json_encode(array('sucesso' => false, 'mensagem' => 'Falha ao salvar no banco.'));
         }
 
     } catch (PDOException $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
         if ($e->getCode() == 23000) {
             echo json_encode(array('sucesso' => false, 'mensagem' => 'O E-mail ou CPF já está cadastrado.'));
         } else {

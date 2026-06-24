@@ -82,10 +82,15 @@ $(document).ready(function() {
         if (!isLoginTab) {
             if (tipoSelecionado === 'professor') {
                 $('#campos-professor').slideDown(300);
-                $('input[name="cpf"], input[name="endereco"]').prop('required', true);
+                $('#reg-cpf').prop('required', true);
+                if ($('input[name="local_existente"]:checked').val() === 'nao') {
+                    $('#nome-local, #modalidade-local, #endereco-autocomplete').prop('required', true);
+                } else {
+                    $('#select-local-existente').prop('required', true);
+                }
             } else {
                 $('#campos-professor').slideUp(300);
-                $('input[name="cpf"], input[name="endereco"]').prop('required', false);
+                $('#reg-cpf, #nome-local, #modalidade-local, #endereco-autocomplete, #select-local-existente').prop('required', false);
             }
         }
 
@@ -114,7 +119,8 @@ $(document).ready(function() {
     // UTILITÁRIOS (Ver / Esconder Senha)
     // ==========================================
 
-    $('.toggle-password').on('click', function() {
+    $(document).on('click', '.toggle-password', function(e) {
+        e.preventDefault();
         const inputId = $(this).data('target');
         const inputField = $('#' + inputId);
         
@@ -145,6 +151,129 @@ $(document).ready(function() {
         setTimeout(() => alertBox.fadeOut(), 5000);
     }
 
+    // ==========================================
+    // VALIDAÇÃO DE CPF (FRONTEND)
+    // ==========================================
+    function validarCPF(cpf) {
+        cpf = cpf.replace(/[^\d]+/g,'');
+        if(cpf == '') return false; 
+        if (cpf.length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;       
+        let add = 0;    
+        for (let i=0; i < 9; i ++)       
+            add += parseInt(cpf.charAt(i)) * (10 - i);  
+        let rev = 11 - (add % 11);  
+        if (rev == 10 || rev == 11) rev = 0;    
+        if (rev != parseInt(cpf.charAt(9))) return false;       
+        add = 0;    
+        for (let i = 0; i < 10; i ++)        
+            add += parseInt(cpf.charAt(i)) * (11 - i);  
+        rev = 11 - (add % 11);  
+        if (rev == 10 || rev == 11) rev = 0;    
+        if (rev != parseInt(cpf.charAt(10))) return false;       
+        return true;   
+    }
+
+    $('#reg-cpf').on('input', function() {
+        let v = $(this).val().replace(/\D/g, '');
+        if (v.length > 11) v = v.substring(0, 11);
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+        $(this).val(v);
+
+        if (v.length === 14) {
+            if (validarCPF(v)) {
+                $('#cpf-feedback').text('✔️ Válido').css('color', '#86efac');
+            } else {
+                $('#cpf-feedback').text('❌ Inválido').css('color', '#fca5a5');
+            }
+        } else {
+            $('#cpf-feedback').text('');
+        }
+    });
+
+    // ==========================================
+    // LÓGICA DO LOCAL ESPORTIVO (PROFESSOR)
+    // ==========================================
+    $('input[name="local_existente"]').on('change', function() {
+        if ($(this).val() === 'sim') {
+            $('#campos-novo-local').slideUp();
+            $('#campos-buscar-local').slideDown();
+            $('#nome-local, #modalidade-local, #endereco-autocomplete').prop('required', false);
+            $('#select-local-existente').prop('required', true);
+
+            if ($('#select-local-existente option').length <= 1) {
+                $.ajax({
+                    url: 'backend/locais_publicos.php',
+                    method: 'GET',
+                    success: function(res) {
+                        if (res.sucesso) {
+                            let options = '<option value="" disabled selected>Selecione o local...</option>';
+                            res.locais.forEach(loc => {
+                                options += `<option value="${loc.id}">${loc.nome} (${loc.modalidade}) - ${loc.endereco}</option>`;
+                            });
+                            $('#select-local-existente').html(options);
+                        } else {
+                            $('#select-local-existente').html('<option disabled>Erro ao carregar locais</option>');
+                        }
+                    }
+                });
+            }
+        } else {
+            $('#campos-novo-local').slideDown();
+            $('#campos-buscar-local').slideUp();
+            $('#nome-local, #modalidade-local, #endereco-autocomplete').prop('required', true);
+            $('#select-local-existente').prop('required', false);
+        }
+    });
+
+    // ==========================================
+    // AUTOCOMPLETE NOMINATIM (ENDEREÇOS E POIs)
+    // ==========================================
+    let timerNominatim;
+    $('#endereco-autocomplete').on('input', function() {
+        const query = $(this).val();
+        const resultsBox = $('#autocomplete-results');
+
+        clearTimeout(timerNominatim);
+        
+        if (query.length < 3) {
+            resultsBox.hide();
+            return;
+        }
+
+        timerNominatim = setTimeout(() => {
+            $.ajax({
+                url: `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=br&limit=5`,
+                method: 'GET',
+                success: function(data) {
+                    resultsBox.empty();
+                    if (data && data.length > 0) {
+                        data.forEach(item => {
+                            const div = $('<div></div>').text(item.display_name);
+                            div.on('click', function() {
+                                $('#endereco-autocomplete').val(item.display_name);
+                                $('#local-lat').val(item.lat);
+                                $('#local-lon').val(item.lon);
+                                resultsBox.hide();
+                            });
+                            resultsBox.append(div);
+                        });
+                        resultsBox.show();
+                    } else {
+                        resultsBox.hide();
+                    }
+                }
+            });
+        }, 500);
+    });
+
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#endereco-autocomplete, #autocomplete-results').length) {
+            $('#autocomplete-results').hide();
+        }
+    });
+
     // POST NO CADASTRO
     $('#form-register').on('submit', function(e) {
         e.preventDefault();
@@ -161,6 +290,11 @@ $(document).ready(function() {
         const rawArray = $(this).serializeArray();
         const dataJson = {};
         rawArray.forEach(item => { dataJson[item.name] = item.value; });
+
+        if (dataJson.tipo_usuario === 'professor' && dataJson.cpf && !validarCPF(dataJson.cpf)) {
+            showFeedbackMessage('CPF Inválido. Corrija para continuar.', false);
+            return;
+        }
 
         // Muda visual do botão
         const btn = $(this).find('button[type="submit"]');

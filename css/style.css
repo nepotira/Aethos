@@ -12,7 +12,8 @@ html,
 body {
     height: 100%;
     margin: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     background-color: #0D0F32;
     color: #ffffff;
     font-family: 'Inter', sans-serif;
